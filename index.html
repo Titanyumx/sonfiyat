@@ -547,6 +547,19 @@ button.gcard.newg{cursor:pointer;color:inherit;text-align:left}
 @media (max-height:420px){.sp-icon{width:86px;height:86px;border-radius:20px}.sp-icon .carsvg{width:100px!important}.sp-tag{font-size:10px;top:10px}.sp-title{font-size:44px;margin-top:10px}.sp-bar{margin-top:18px}.sp-tip{margin-top:10px}}
 .sp-dim{background:linear-gradient(180deg,#0b111a66 0,#0b111acc 40%,#0b111ad9 62%,#0b111a55 85%,#0b111a33 100%)}
 .sp-mid{top:46%}
+.walker{animation:walk 22s linear infinite}@keyframes walk{0%{transform:translate(-40px,0)}100%{transform:translate(840px,0)}}
+.walker>g>rect:nth-of-type(2){animation:leg .5s ease-in-out infinite alternate}
+@keyframes leg{from{transform:translateY(0)}to{transform:translateY(-2px)}}
+/* kasa sayacı ve satış kutlaması */
+.pill.kasa.up b{animation:cashup .9s}.pill.kasa.dn b{animation:cashdn .9s}
+@keyframes cashup{0%{color:#3ccf7a;transform:scale(1.12)}100%{color:inherit;transform:none}}@keyframes cashdn{0%{color:#ef5a5a;transform:scale(.94)}100%{color:inherit;transform:none}}
+.fx-sale{position:fixed;inset:0;z-index:90;pointer-events:none;display:grid;place-items:center}
+.fx-stamp{display:flex;flex-direction:column;align-items:center;padding:14px 34px;border:5px solid #3ccf7a;border-radius:18px;background:#0f1a14ee;transform:rotate(-8deg);animation:stamp 1.9s cubic-bezier(.2,1.4,.4,1) forwards;box-shadow:0 20px 60px #000c}
+.fx-stamp b{font-size:54px;font-weight:900;letter-spacing:3px;color:#3ccf7a;line-height:1}.fx-stamp span{margin-top:6px;font-size:22px;font-weight:800;color:#ffd27a}
+.fx-sale.bad .fx-stamp{border-color:#ef5a5a}.fx-sale.bad .fx-stamp b{color:#ef5a5a}
+@keyframes stamp{0%{transform:rotate(-8deg) scale(2.4);opacity:0}18%{transform:rotate(-8deg) scale(1);opacity:1}80%{opacity:1}100%{transform:rotate(-8deg) scale(1.05);opacity:0}}
+.fx-burst{position:absolute}.fx-burst i{position:absolute;left:-14px;top:-14px;width:28px;height:28px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff1a8,#f5b301 60%,#b97f00);color:#7a5200;font-style:normal;font-weight:900;font-size:15px;display:grid;place-items:center;animation:coin 1.3s ease-out forwards}
+@keyframes coin{0%{transform:rotate(var(--a)) translateY(0) scale(.4);opacity:0}15%{opacity:1}100%{transform:rotate(var(--a)) translateY(calc(-1 * var(--d))) scale(1);opacity:0}}
 </style></head>
 <body><div id="app"></div>
 <script>// Türkiye'nin 81 ili ve 973 ilçesi (2013 sonrası idari yapı)
@@ -2895,47 +2908,64 @@ window.Splash = Splash;</script>
   };
   const TAIL = 'L167 70 A15 15 0 0 0 137 70 L63 70 A15 15 0 0 0 33 70';
   const SHAPES = {
+    hatch: { body: `M14 64 Q12 42 28 32 L52 24 Q64 19 82 19 L116 19 Q132 19 146 35 L176 44 Q190 48 190 60 L190 66 Q190 70 186 70 ${TAIL} L18 70 Q14 70 14 64 Z`,
+      win: ['M30 40 Q34 29 54 25 L84 23 L84 40 Z', 'M88 23 L114 23 Q128 23 140 38 L88 40 Z'], door: 86, light: [181, 48], tail: [15, 40], belt: 41, mir: [140, 38] },
     sedan: { body: `M14 66 Q12 54 22 50 L52 44 Q64 28 84 24 L124 24 Q140 24 152 40 L178 46 Q190 49 190 60 L190 66 Q190 70 186 70 ${TAIL} L18 70 Q14 70 14 66 Z`,
-      win: ['M60 44 Q70 31 86 28 L104 28 L104 44 Z', 'M108 28 L122 28 Q136 28 146 42 L108 44 Z'], door: 106, light: [180, 50], tail: [16, 54] },
+      win: ['M60 44 Q70 31 86 28 L104 28 L104 44 Z', 'M108 28 L122 28 Q136 28 146 42 L108 44 Z'], door: 106, light: [180, 50], tail: [16, 54], belt: 45, mir: [146, 42] },
+    limo: { body: `M10 66 Q8 55 18 52 L56 46 Q70 29 94 26 L132 26 Q150 26 162 42 L184 48 Q194 51 194 61 L194 66 Q194 70 190 70 ${TAIL} L14 70 Q10 70 10 66 Z`,
+      win: ['M64 46 Q74 33 94 30 L114 30 L114 46 Z', 'M118 30 L132 30 Q146 30 156 44 L118 46 Z'], door: 116, light: [184, 52], tail: [12, 55], belt: 47, mir: [156, 44] },
     suv: { body: `M12 64 L14 44 Q16 36 26 34 L46 32 Q56 18 74 16 L136 16 Q150 16 160 30 L180 38 Q190 41 190 54 L190 66 Q190 70 186 70 ${TAIL} L16 70 Q12 70 12 64 Z`,
-      win: ['M52 32 Q60 21 76 20 L100 20 L100 33 Z', 'M104 20 L134 20 Q146 20 154 32 L104 33 Z'], door: 102, light: [182, 42], tail: [14, 44] },
+      win: ['M52 32 Q60 21 76 20 L100 20 L100 33 Z', 'M104 20 L134 20 Q146 20 154 32 L104 33 Z'], door: 102, light: [182, 42], tail: [14, 44], belt: 34, mir: [154, 32] },
     van: { body: `M10 66 L10 22 Q10 12 22 12 L130 12 Q144 12 154 26 L176 40 Q190 46 190 58 L190 66 Q190 70 186 70 ${TAIL} L14 70 Q10 70 10 66 Z`,
-      win: ['M134 18 Q144 18 152 30 L162 38 L134 38 Z'], door: 128, light: [182, 48], tail: [12, 30] },
+      win: ['M134 18 Q144 18 152 30 L162 38 L134 38 Z'], door: 128, light: [182, 48], tail: [12, 30], belt: 39, mir: [162, 38] },
     sport: { body: `M10 64 Q10 56 20 54 L60 48 Q80 34 100 32 L124 32 Q140 32 156 44 L184 50 Q194 53 194 62 L194 66 Q194 70 190 70 ${TAIL} L14 70 Q10 70 10 64 Z`,
-      win: ['M70 48 Q86 37 102 36 L122 36 Q134 36 146 46 Z'], door: 112, light: [186, 54], tail: [12, 57] },
+      win: ['M70 48 Q86 37 102 36 L122 36 Q134 36 146 46 Z'], door: 112, light: [186, 54], tail: [12, 57], belt: 49, mir: [146, 46] },
     classic: { body: `M12 66 Q10 56 20 54 L50 52 Q58 36 72 34 L118 34 Q130 34 140 48 L178 52 Q190 54 190 62 L190 66 Q190 70 186 70 ${TAIL} L16 70 Q12 70 12 66 Z`,
-      win: ['M60 51 Q66 39 76 38 L96 38 L96 51 Z', 'M100 38 L116 38 Q126 38 134 50 L100 51 Z'], door: 98, light: [182, 56], tail: [14, 58] },
+      win: ['M60 51 Q66 39 76 38 L96 38 L96 51 Z', 'M100 38 L116 38 Q126 38 134 50 L100 51 Z'], door: 98, light: [182, 56], tail: [14, 58], belt: 52, mir: [134, 50] },
   };
-  const shapeOf = cls => ({ SUV: 'suv', Ticari: 'van', Spor: 'sport', Klasik: 'classic' })[cls] || 'sedan';
+  const shapeOf = cls => ({ Ekonomi: 'hatch', SUV: 'suv', Ticari: 'van', Spor: 'sport', Klasik: 'classic', 'Lüks': 'limo' })[cls] || 'sedan';
 
-  function wheel(cx, id) {
-    const spokes = [0, 72, 144, 216, 288].map(a => `<rect x="-1.2" y="-8.5" width="2.4" height="8" rx="1" fill="#8d949c" transform="rotate(${a})"/>`).join('');
-    return `<g transform="translate(${cx} 70)"><circle r="15" fill="#141414"/><circle r="13" fill="none" stroke="#2a2a2a" stroke-width="2"/>
-      <circle r="9.5" fill="url(#rim${id})"/>${spokes}<circle r="3" fill="#3a3f45"/></g>`;
+  function wheel(cx, id, chrome) {
+    const n = chrome ? 10 : 5;
+    const spokes = Array.from({ length: n }, (_, i) => `<path d="M-1.6 -3 L-1 -9 L1 -9 L1.6 -3 Z" fill="${chrome ? '#e6e9ec' : '#9aa1a9'}" transform="rotate(${i * 360 / n})"/>`).join('');
+    return `<g transform="translate(${cx} 70)"><circle r="15.5" fill="#101010"/><circle r="15.5" fill="none" stroke="#000" stroke-opacity=".5" stroke-width="1"/><circle r="13.2" fill="none" stroke="#2c2c2c" stroke-width="1.6"/>
+      <circle r="10" fill="url(#rim${id})"/><circle r="10" fill="none" stroke="#5d646c" stroke-width=".8"/>${spokes}<circle r="3.2" fill="#30353b"/><circle r="1.3" fill="#c9ced3"/>
+      <path d="M-8 -6 A10 10 0 0 1 6 -8" stroke="#fff" stroke-opacity=".35" stroke-width="1.4" fill="none"/></g>`;
   }
 
   function car(cls, color, opts = {}) {
-    const id = ++gid;
-    const sh = SHAPES[shapeOf(cls)];
-    const w = opts.w || 200;
-    const tag = opts.tag ? `<g transform="translate(${opts.tagX || 120} 4)"><rect width="74" height="18" rx="4" fill="#f5b301"/><text x="37" y="13" text-anchor="middle" font-size="10" font-weight="700" fill="#1a1400">${opts.tag}</text></g>` : '';
+    const id = ++gid, kind = shapeOf(cls), sh = SHAPES[kind];
+    const w = opts.w || 200, premium = kind === 'limo' || kind === 'sport' || kind === 'classic';
+    const tag = opts.tag ? `<g transform="translate(${opts.tagX || 120} 4)"><rect width="74" height="18" rx="4" fill="#f5b301"/><path d="M0 9 l-6 -5 v10 z" fill="#f5b301"/><text x="37" y="13" text-anchor="middle" font-size="10" font-weight="700" fill="#1a1405" font-family="system-ui,sans-serif">${opts.tag}</text></g>` : '';
+    const mir = [0, sh.mir[0] - 2, sh.mir[1]];
+    const extras = (kind === 'suv' ? `<rect x="58" y="12" width="84" height="3" rx="1.5" fill="#2a2f36"/><rect x="66" y="13" width="3" height="4" fill="#2a2f36"/><rect x="130" y="13" width="3" height="4" fill="#2a2f36"/>` : '')
+      + (kind === 'sport' ? `<path d="M12 52 L6 47 L26 47 L24 52 Z" fill="${shade(color, -0.45)}"/>` : '')
+      + (kind === 'van' ? `<rect x="22" y="22" width="96" height="30" rx="3" fill="#fff" opacity=".07"/>` : '');
     return `<svg viewBox="0 0 200 90" width="${w}" height="${w * 0.45}" class="carsvg" aria-hidden="true">
       <defs>
-        <linearGradient id="bd${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${shade(color, 0.35)}"/><stop offset=".45" stop-color="${color}"/><stop offset="1" stop-color="${shade(color, -0.45)}"/></linearGradient>
-        <linearGradient id="wn${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#cfe6f7"/><stop offset=".5" stop-color="#5d7f9c"/><stop offset="1" stop-color="#22313f"/></linearGradient>
-        <radialGradient id="rim${id}"><stop offset="0" stop-color="#eef1f4"/><stop offset="1" stop-color="#8e969f"/></radialGradient>
+        <linearGradient id="bd${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${shade(color, 0.42)}"/><stop offset=".38" stop-color="${color}"/><stop offset=".72" stop-color="${shade(color, -0.18)}"/><stop offset="1" stop-color="${shade(color, -0.5)}"/></linearGradient>
+        <linearGradient id="wn${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#d9ecf8"/><stop offset=".45" stop-color="#6f90ad"/><stop offset="1" stop-color="#1f2c39"/></linearGradient>
+        <radialGradient id="rim${id}" cx=".4" cy=".35"><stop offset="0" stop-color="#f6f8fa"/><stop offset=".7" stop-color="#a5adb5"/><stop offset="1" stop-color="#6b737b"/></radialGradient>
+        <clipPath id="cw${id}">${sh.win.map(p => `<path d="${p}"/>`).join('')}</clipPath>
       </defs>
-      <ellipse cx="100" cy="82" rx="92" ry="6" fill="#000" opacity=".35"/>
-      <path d="${sh.body}" fill="url(#bd${id})" stroke="${shade(color, -0.6)}" stroke-width="1"/>
-      ${sh.win.map(p => `<path d="${p}" fill="url(#wn${id})" stroke="#0b1118" stroke-width="1"/>`).join('')}
-      <path d="M${sh.door} ${shapeOf(cls) === 'van' ? 16 : 30} L${sh.door} 66" stroke="${shade(color, -0.55)}" stroke-width="1" opacity=".7"/>
-      <rect x="${sh.door + 8}" y="50" width="9" height="2.2" rx="1" fill="${shade(color, -0.5)}"/>
-      <path d="M20 58 L188 58" stroke="#fff" stroke-opacity=".18" stroke-width="1.2"/>
-      <rect x="${sh.light[0] - 6}" y="${sh.light[1]}" width="10" height="5" rx="2" fill="#fff4c4"/>
-      <rect x="${sh.tail[0]}" y="${sh.tail[1]}" width="6" height="6" rx="1.5" fill="#d9363e"/>
-      <rect x="12" y="64" width="180" height="4" rx="2" fill="${shade(color, -0.6)}" opacity=".55"/>
-      ${shapeOf(cls) === 'classic' ? '<rect x="10" y="62" width="182" height="3" rx="1.5" fill="#d8dde2"/>' : ''}
-      ${wheel(48, id)}${wheel(152, id)}${tag}
+      <ellipse cx="100" cy="84" rx="96" ry="6" fill="#000" opacity=".38"/>
+      <path d="${sh.body}" fill="url(#bd${id})" stroke="${shade(color, -0.65)}" stroke-width="1"/>
+      <path d="M22 ${sh.belt + 3} Q100 ${sh.belt - 1} 184 ${sh.belt + 4}" stroke="#fff" stroke-opacity=".28" stroke-width="2.2" fill="none"/>
+      ${sh.win.map(p => `<path d="${p}" fill="url(#wn${id})" stroke="#0b1118" stroke-width="1.2"/>`).join('')}
+      <g clip-path="url(#cw${id})" opacity=".35"><path d="M40 60 L90 10 L104 10 L54 60 Z M100 60 L150 10 L158 10 L108 60 Z" fill="#fff"/></g>
+      ${extras}
+      <path d="M${sh.door} ${kind === 'van' ? 16 : sh.belt - 12} L${sh.door} 66" stroke="${shade(color, -0.55)}" stroke-width="1" opacity=".75"/>
+      ${kind === 'limo' ? `<path d="M${sh.door - 34} ${sh.belt} L${sh.door - 34} 66" stroke="${shade(color, -0.55)}" stroke-width="1" opacity=".6"/>` : ''}
+      <rect x="${sh.door + 8}" y="${sh.belt + 5}" width="10" height="2.4" rx="1.2" fill="${shade(color, 0.3)}" stroke="${shade(color, -0.5)}" stroke-width=".5"/>
+      <path d="M${+mir[1] - 4} ${+mir[2] - 1} l6 -4 l5 1 l-1 5 z" fill="${shade(color, -0.25)}" stroke="${shade(color, -0.6)}" stroke-width=".6"/>
+      <path d="M18 60 L188 60" stroke="${premium ? '#e8edf2' : '#fff'}" stroke-opacity="${premium ? .55 : .16}" stroke-width="${premium ? 1.4 : 1.2}"/>
+      <rect x="${sh.light[0] - 7}" y="${sh.light[1]}" width="12" height="5.5" rx="2.4" fill="#fff6d0" stroke="#c9b77a" stroke-width=".5"/>
+      ${opts.night ? `<path d="M${sh.light[0] + 4} ${sh.light[1] + 3} L240 ${sh.light[1] - 8} L240 ${sh.light[1] + 16} Z" fill="#fff3b0" opacity=".25"/>` : ''}
+      <rect x="${sh.tail[0]}" y="${sh.tail[1]}" width="6" height="7" rx="1.5" fill="#d9363e"/><rect x="${sh.tail[0] + 1}" y="${sh.tail[1] + 1}" width="2" height="5" rx="1" fill="#ff8a8a" opacity=".7"/>
+      <path d="M182 62 L192 62 L192 66 Q192 70 188 70 L182 70 Z" fill="${shade(color, -0.55)}"/><path d="M12 62 L20 62 L20 70 L16 70 Q12 70 12 66 Z" fill="${shade(color, -0.55)}"/>
+      <rect x="12" y="65" width="180" height="3.5" rx="1.7" fill="${shade(color, -0.65)}" opacity=".55"/>
+      ${kind === 'classic' ? '<rect x="8" y="61" width="186" height="3.5" rx="1.7" fill="#dfe4e9"/><circle cx="178" cy="54" r="3" fill="#dfe4e9"/>' : ''}
+      ${wheel(48, id, premium)}${wheel(152, id, premium)}${tag}
     </svg>`;
   }
 
@@ -2950,46 +2980,76 @@ window.Splash = Splash;</script>
     return [mix(a[1][0], b[1][0]), mix(a[1][1], b[1][1]), p > 0.82];
   }
 
+  // galeri sahnesi: seviyeye göre bina (1 mahalle → 5 oto merkezi), gün saati, park etmiş araçlar, yayalar
   function scene({ name, cars, p = 0.3, level = 1 }) {
     const id = ++gid;
     const [top, bot, night] = sky(p);
     const esc = t => String(t).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    const N = (d, n) => night ? n : d;
+    const G = `url(#glass${id})`, B = 156; // zemin çizgisi
     const bld = [[0, 60, 70], [64, 40, 95], [100, 70, 60], [166, 50, 110], [612, 60, 90], [668, 45, 120], [708, 92, 70]];
     const city = bld.map(([x, w, h]) => {
       let wins = '';
-      for (let yy = 156 - h + 10; yy < 146; yy += 14) for (let xx = x + 7; xx < x + w - 8; xx += 12)
-        wins += `<rect x="${xx}" y="${yy}" width="5" height="7" fill="${night ? '#ffd77a' : '#ffffff'}" opacity="${night ? ((xx * 7 + yy) % 3 ? 0.85 : 0.15) : 0.25}"/>`;
-      return `<rect x="${x}" y="${156 - h}" width="${w}" height="${h}" fill="${night ? '#1c2440' : '#7d8aa3'}" opacity="${night ? 1 : 0.55}"/>${wins}`;
+      for (let yy = B - h + 10; yy < B - 10; yy += 14) for (let xx = x + 7; xx < x + w - 8; xx += 12)
+        wins += `<rect x="${xx}" y="${yy}" width="5" height="7" fill="${N('#ffffff', '#ffd77a')}" opacity="${night ? ((xx * 7 + yy) % 3 ? 0.85 : 0.15) : 0.25}"/>`;
+      return `<rect x="${x}" y="${B - h}" width="${w}" height="${h}" fill="${N('#7d8aa3', '#1c2440')}" opacity="${night ? 1 : 0.55}"/>${wins}`;
     }).join('');
-    const lot = cars.slice(0, 5);
-    const slotW = 140;
-    const startX = 400 - (lot.length * slotW) / 2;
-    const parked = lot.map((c, i) => `<g transform="translate(${startX + i * slotW + 5} 146)">${car(c.cls, c.color, { w: 130, tag: c.tag, tagX: 63 })}</g>`).join('');
+    const sign = (cx, y, w, size = 15) => `<rect x="${cx - w / 2}" y="${y}" width="${w}" height="${size + 14}" rx="6" fill="#151a21" stroke="#f5b301" stroke-width="2"/>
+      <text x="${cx}" y="${y + size + 3}" text-anchor="middle" font-size="${size}" font-weight="800" fill="#f5b301" font-family="system-ui,sans-serif"${night ? ` style="filter:drop-shadow(0 0 4px #f5b301)"` : ''}>${esc(name).slice(0, 26)}</text>`;
+    const glassRow = (x, y, w, h, n) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${G}" opacity="${night ? .95 : .85}"/>${night ? `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#ffd77a" opacity=".28"/>` : ''}
+      ${Array.from({ length: n - 1 }, (_, k) => `<rect x="${x + (k + 1) * w / n - 1}" y="${y}" width="2.5" height="${h}" fill="${N('#3b4b5c', '#1b2330')}"/>`).join('')}`;
+    const awning = (x, w, y, a = '#f5b301', b = '#c98f00') => { const n = Math.round(w / 28); return Array.from({ length: n }, (_, k) => `<path d="M${x + k * w / n} ${y} h${w / n} l-2 14 h${-w / n + 4} z" fill="${k % 2 ? b : a}"/>`).join('') + `<path d="${Array.from({ length: n }, (_, k) => `M${x + k * w / n} ${y + 14} q${w / n / 2} 8 ${w / n} 0`).join(' ')}" fill="${a}"/>`; };
+    const flag = (x, y, c) => `<rect x="${x}" y="${y}" width="2" height="${B - y}" fill="${N('#5a6270', '#2b2f35')}"/><path d="M${x + 2} ${y} q10 4 20 0 v14 q-10 4 -20 0 z" fill="${c}"/>`;
+    const bunting = (x1, x2, y) => { let s = `<path d="M${x1} ${y} Q${(x1 + x2) / 2} ${y + 16} ${x2} ${y}" stroke="#444" stroke-width="1" fill="none"/>`; const cs = ['#e23b3b', '#f5b301', '#3b7be2', '#3ccf7a', '#ffffff'];
+      for (let k = 1; k < 14; k++) { const tt = k / 14, xx = x1 + (x2 - x1) * tt, yy = y + 16 * 4 * tt * (1 - tt) * .5 * 2; s += `<path d="M${xx - 5} ${yy} L${xx + 5} ${yy} L${xx} ${yy + 10} Z" fill="${cs[k % 5]}"/>`; } return s; };
+    let house = '';
+    if (level <= 1) {
+      house = `<rect x="270" y="${B - 96}" width="260" height="96" fill="${N('#e9e4da', '#2a3142')}"/>${glassRow(286, B - 58, 228, 58, 4)}
+        ${awning(260, 280, B - 72)}${sign(400, B - 100, 210, 14)}
+        <rect x="560" y="${B - 46}" width="58" height="46" fill="${N('#b0bcc8', '#3a4558')}"/><rect x="570" y="${B - 36}" width="18" height="14" fill="${G}"/><rect x="594" y="${B - 32}" width="14" height="32" fill="${N('#7a8796', '#252c3b')}"/>
+        <rect x="180" y="${B - 60}" width="70" height="24" rx="3" fill="#e23b3b"/><text x="215" y="${B - 43}" text-anchor="middle" font-size="12" font-weight="900" fill="#fff" font-family="system-ui">SATILIK</text><rect x="184" y="${B - 36}" width="3" height="36" fill="#555"/><rect x="243" y="${B - 36}" width="3" height="36" fill="#555"/>
+        ${bunting(120, 680, B - 40)}`;
+    } else if (level === 2) {
+      house = `<rect x="240" y="${B - 132}" width="320" height="132" fill="${N('#ece6dc', '#2c3345')}"/><rect x="240" y="${B - 132}" width="320" height="8" fill="${N('#c9c1b4', '#20283a')}"/>
+        ${[0, 1, 2, 3, 4].map(k => `<rect x="${256 + k * 60}" y="${B - 118}" width="44" height="34" fill="${G}" opacity=".8"/><rect x="${256 + k * 60}" y="${B - 86}" width="44" height="4" fill="${N('#c9c1b4', '#20283a')}"/>`).join('')}
+        ${glassRow(256, B - 62, 288, 62, 5)}${awning(240, 320, B - 70, '#2f6b9a', '#1f4e75')}${sign(400, B - 100, 240, 15)}
+        ${flag(200, B - 100, '#f5b301')}${flag(590, B - 100, '#e23b3b')}${bunting(140, 660, B - 44)}`;
+    } else if (level === 3) {
+      house = `<rect x="190" y="${B - 112}" width="420" height="112" fill="${N('#e4e8ee', '#2a3142')}"/>${glassRow(206, B - 78, 388, 78, 7)}
+        <path d="M170 ${B - 112} L630 ${B - 112} L620 ${B - 80} L180 ${B - 80} Z" fill="${N('#3a4658', '#151b26')}"/>${sign(400, B - 100, 260, 16)}
+        <rect x="140" y="${B - 150}" width="26" height="150" fill="${N('#2e3a4c', '#1a2130')}"/><rect x="132" y="${B - 168}" width="42" height="64" rx="5" fill="#f5b301"/><text x="153" y="${B - 140}" text-anchor="middle" font-size="11" font-weight="900" fill="#1a1405" font-family="system-ui">OTO</text><text x="153" y="${B - 126}" text-anchor="middle" font-size="9" font-weight="900" fill="#1a1405" font-family="system-ui">PLAZA</text>
+        ${[640, 670, 700].map((x, k) => flag(x, B - 110, ['#e23b3b', '#f5b301', '#3b7be2'][k])).join('')}`;
+    } else if (level === 4) {
+      house = `<rect x="170" y="${B - 136}" width="460" height="136" fill="${N('#d9e0e8', '#1f2736')}"/>${glassRow(184, B - 122, 432, 122, 8)}
+        <rect x="170" y="${B - 106}" width="460" height="28" fill="${N('#2a3444', '#121822')}"/>
+        <ellipse cx="400" cy="${B - 8}" rx="70" ry="9" fill="${N('#ffffff', '#ffd77a')}" opacity=".35"/><path d="M370 ${B - 122} L340 ${B - 10} L460 ${B - 10} L430 ${B - 122} Z" fill="#fff" opacity="${night ? .12 : .08}"/>
+        <rect x="160" y="${B - 150}" width="480" height="16" fill="${N('#2a3444', '#121822')}"/>${sign(400, B - 104, 300, 17)}
+        ${[0, 1, 2, 3].map(k => `<rect x="${170 + k * 150}" y="${B - 136}" width="3" height="136" fill="${N('#7a8696', '#334055')}"/>`).join('')}
+        <rect x="660" y="${B - 170}" width="30" height="170" fill="${N('#2e3a4c', '#1a2130')}"/><rect x="652" y="${B - 190}" width="46" height="90" rx="6" fill="#151a21" stroke="#f5b301" stroke-width="2"/><text x="675" y="${B - 150}" text-anchor="middle" font-size="26" font-weight="900" fill="#f5b301" font-family="system-ui">?</text>
+        ${[100, 125].map((x, k) => flag(x, B - 120, ['#f5b301', '#3ccf7a'][k])).join('')}`;
+    } else {
+      house = `<rect x="320" y="${B - 236}" width="160" height="130" fill="${N('#cfd8e2', '#1c2434')}"/>${[0, 1, 2, 3, 4, 5, 6].map(r => glassRow(332, B - 228 + r * 18, 136, 12, 4)).join('')}
+        <rect x="372" y="${B - 262}" width="56" height="26" rx="5" fill="#f5b301"/><text x="400" y="${B - 243}" text-anchor="middle" font-size="16" font-weight="900" fill="#1a1405" font-family="system-ui">SF?</text>
+        <rect x="140" y="${B - 112}" width="520" height="112" fill="${N('#dde3ea', '#20283a')}"/>${glassRow(152, B - 98, 496, 98, 9)}<rect x="140" y="${B - 106}" width="520" height="26" fill="${N('#2a3444', '#121822')}"/>
+        <rect x="130" y="${B - 120}" width="540" height="14" fill="${N('#2a3444', '#121822')}"/>${sign(400, B - 104, 320, 17)}
+        ${[90, 112, 680, 702].map((x, k) => flag(x, B - 130, ['#e23b3b', '#f5b301', '#3b7be2', '#3ccf7a'][k])).join('')}
+        ${night ? `<path d="M400 ${B - 262} L360 0 L440 0 Z" fill="#ffd77a" opacity=".12"/>` : ''}`;
+    }
+    const lot = cars.slice(0, 5), slotW = 140, startX = 400 - (lot.length * slotW) / 2;
+    const parked = lot.map((c, k) => `<g transform="translate(${startX + k * slotW + 5} 146)">${car(c.cls, c.color, { w: 130, tag: c.tag, tagX: 63 })}</g>`).join('');
+    const walker = (x, c, d) => `<g class="walker" style="animation-delay:${d}s"><g transform="translate(${x} 166)"><circle cx="6" cy="6" r="5" fill="#e0b48a"/><rect x="1" y="12" width="10" height="20" rx="4" fill="${c}"/><rect x="2" y="30" width="3" height="12" fill="#1c2431"/><rect x="7" y="30" width="3" height="12" fill="#1c2431"/></g></g>`;
     return `<svg viewBox="0 0 800 250" class="scene" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
       <defs><linearGradient id="sky${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${top}"/><stop offset="1" stop-color="${bot}"/></linearGradient>
-        <linearGradient id="glass${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#bfe0f5"/><stop offset="1" stop-color="#4b6f8e"/></linearGradient></defs>
+        <linearGradient id="glass${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#cfe6f7"/><stop offset=".55" stop-color="#7d9fbd"/><stop offset="1" stop-color="#3d5c78"/></linearGradient></defs>
       <rect width="800" height="250" fill="url(#sky${id})"/>
-      ${night ? '<circle cx="680" cy="40" r="14" fill="#f3efd6"/>' : `<circle cx="${120 + p * 560}" cy="${70 - Math.sin(p * Math.PI) * 40}" r="20" fill="#fff3c4" opacity=".9"/>`}
-      ${city}
-      <g transform="translate(250 30)">
-        <rect x="0" y="22" width="300" height="104" fill="${night ? '#2a3142' : '#e9e4da'}"/>
-        <rect x="16" y="52" width="268" height="74" fill="url(#glass${id})" opacity="${night ? 0.95 : 0.85}"/>
-        ${night ? '<rect x="16" y="52" width="268" height="74" fill="#ffd77a" opacity=".25"/>' : ''}
-        ${[0, 1, 2, 3].map(i => `<rect x="${16 + i * 67}" y="52" width="2" height="74" fill="#3b4b5c"/>`).join('')}
-        <path d="M-8 40 L308 40 L300 54 L0 54 Z" fill="#f5b301"/>
-        ${Array.from({ length: 10 }, (_, i) => `<path d="M${-8 + i * 31.6} 40 L${7.8 + i * 31.6} 40 L${7 + i * 30} 54 L${i * 30} 54 Z" fill="#c98f00"/>`).join('')}
-        <rect x="40" y="0" width="220" height="30" rx="6" fill="#151a21" stroke="#f5b301" stroke-width="2"/>
-        <text x="150" y="20" text-anchor="middle" font-size="15" font-weight="800" fill="#f5b301" font-family="system-ui,sans-serif">${esc(name).slice(0, 26)}</text>
-        ${level >= 2 ? `<rect x="-40" y="56" width="40" height="70" fill="${night ? '#252c3b' : '#d8d2c5'}"/><rect x="-34" y="70" width="28" height="40" fill="url(#glass${id})" opacity=".8"/><rect x="300" y="56" width="40" height="70" fill="${night ? '#252c3b' : '#d8d2c5'}"/><rect x="306" y="70" width="28" height="40" fill="url(#glass${id})" opacity=".8"/>` : ''}
-        ${level >= 3 ? `<rect x="10" y="-34" width="280" height="56" fill="${night ? '#2f3749' : '#efeae1'}"/>${[0, 1, 2, 3, 4, 5].map(i => `<rect x="${22 + i * 45}" y="-24" width="34" height="34" fill="url(#glass${id})" opacity=".8"/>`).join('')}` : ''}
-        ${level >= 4 ? [0, 1, 2, 3].map(i => `<rect x="${-30 + i * 115}" y="-70" width="2" height="40" fill="#555"/><path d="M${-28 + i * 115} -70 h22 l-4 7 l4 7 h-22 z" fill="${['#f5b301', '#e23b3b', '#3b7be2', '#3ccf7a'][i]}"/>`).join('') : ''}
-      </g>
-      <rect x="0" y="156" width="800" height="52" fill="${night ? '#4a505a' : '#b9bec4'}"/>${Array.from({ length: 9 }, (_, i) => `<rect x="${i * 100}" y="156" width="2" height="52" fill="#ffffff" opacity=".35"/>`).join('')}<rect x="0" y="204" width="800" height="4" fill="#d8dce0"/>
+      ${night ? '<circle cx="680" cy="40" r="14" fill="#f3efd6"/>' + Array.from({ length: 18 }, (_, k) => `<circle cx="${(k * 97) % 800}" cy="${(k * 53) % 90 + 6}" r="1" fill="#fff" opacity=".7"/>`).join('') : `<circle cx="${120 + p * 560}" cy="${70 - Math.sin(p * Math.PI) * 40}" r="20" fill="#fff3c4" opacity=".9"/>`}
+      ${city}${house}
+      <rect x="0" y="${B}" width="800" height="52" fill="${N('#b9bec4', '#4a505a')}"/>${Array.from({ length: 9 }, (_, k) => `<rect x="${k * 100}" y="${B}" width="2" height="52" fill="#ffffff" opacity=".35"/>`).join('')}<rect x="0" y="204" width="800" height="3" fill="${N('#8e949b', '#30343b')}"/>
       <rect x="0" y="206" width="800" height="44" fill="#3a3f46"/>
-      ${Array.from({ length: 12 }, (_, i) => `<rect x="${i * 72 + 10}" y="227" width="36" height="3" fill="#e9e4c9" opacity=".8"/>`).join('')}
-      ${[60, 740].map(x => `<rect x="${x}" y="110" width="4" height="98" fill="#2b2f35"/><rect x="${x - 10}" y="106" width="24" height="5" rx="2" fill="#2b2f35"/>${night ? `<circle cx="${x + 2}" cy="114" r="16" fill="#ffd77a" opacity=".25"/>` : ''}`).join('')}
-      ${parked}
-      <g class="passing">${car('Aile', '#1d4e89', { w: 90 })}</g>
+      ${Array.from({ length: 12 }, (_, k) => `<rect x="${k * 72 + 10}" y="227" width="36" height="3" fill="#e9e4c9" opacity=".8"/>`).join('')}
+      ${[60, 740].map(x => `<rect x="${x}" y="110" width="4" height="98" fill="#2b2f35"/><rect x="${x - 10}" y="106" width="24" height="5" rx="2" fill="#2b2f35"/>${night ? `<circle cx="${x + 2}" cy="114" r="16" fill="#ffd77a" opacity=".25"/><path d="M${x - 8} 111 L${x + 12} 111 L${x + 40} 206 L${x - 36} 206 Z" fill="#ffd77a" opacity=".06"/>` : ''}`).join('')}
+      ${parked}${walker(0, '#b3474f', 0)}${walker(0, '#3d6ea8', 7)}
+      <g class="passing">${car('Aile', '#1d4e89', { w: 90, night })}</g>
     </svg>`;
   }
 
@@ -3101,6 +3161,29 @@ window.Splash = Splash;</script>
       ${modal ? `<div class="dim" data-close></div><section class="modal ${modal.type}">${modalView()}</section>` : ''}
       <div id="toast-root"></div>${ROT}`;
     bind();
+    animCash();
+    if (nego && nego.done && nego.result === 'deal' && !nego.fxShown) { nego.fxShown = true; celebrate(nego.mode === 'sell' ? 'SATILDI!' : 'ALINDI!', nego.mode === 'sell' && nego.profit != null ? (nego.profit >= 0 ? `+${M(nego.profit, nego.cc)} kâr` : `${M(-nego.profit, nego.cc)} zarar`) : 'Galeriye hayırlı olsun', nego.mode === 'sell' && nego.profit < 0); }
+  }
+  // kasa: değişince sayarak artar/azalır
+  let shownCash = null, cashAnim = 0, cashKey = '';
+  function animCash() {
+    const el = document.getElementById('kasav'); if (!el || !S) return;
+    const target = w().cash, key = cc();
+    if (shownCash === null || key !== cashKey) { shownCash = target; cashKey = key; el.textContent = M(target); return; }
+    if (Math.abs(target - shownCash) < 1) return;
+    const from = shownCash, t0 = performance.now(), dur = 700, up = target > from;
+    el.parentElement.classList.remove('up', 'dn'); void el.offsetWidth; el.parentElement.classList.add(up ? 'up' : 'dn');
+    cancelAnimationFrame(cashAnim);
+    const step = now => { const k = Math.min(1, (now - t0) / dur), e = 1 - Math.pow(1 - k, 3); shownCash = from + (target - from) * e;
+      const x = document.getElementById('kasav'); if (x) x.textContent = M(Math.round(shownCash)); if (k < 1) cashAnim = requestAnimationFrame(step); else shownCash = target; };
+    cashAnim = requestAnimationFrame(step);
+  }
+  // satış/alış kutlaması
+  function celebrate(title, sub, bad) {
+    const el = document.createElement('div'); el.className = 'fx-sale' + (bad ? ' bad' : '');
+    const coins = bad ? '' : Array.from({ length: 16 }, (_, i) => `<i style="--a:${i * 22.5}deg;--d:${110 + (i % 3) * 40}px;animation-delay:${(i % 4) * 40}ms">₺</i>`).join('');
+    el.innerHTML = `<div class="fx-burst">${coins}</div><div class="fx-stamp"><b>${title}</b><span>${sub}</span></div>`;
+    document.body.appendChild(el); setTimeout(() => el.remove(), 1900);
   }
 
   const mmss = ms => { const t = Math.ceil((ms || 0) / 1000); return `${Math.floor(t / 60)}:${String(t % 60).padStart(2, '0')}`; };
@@ -3109,7 +3192,7 @@ window.Splash = Splash;</script>
     return `<header class="top">
       <div class="co"><b>${esc(S.company)}</b><small>Ofis: ${E.officeOf(S).name}</small></div>
       <button class="pill chatb" data-soon="Sohbet" title="Sohbet">💬</button>
-      <div class="pill kasa"><small>KASA</small><b>${M(w().cash)}</b></div>
+      <div class="pill kasa"><small>KASA</small><b id="kasav">${M(shownCash === null ? w().cash : shownCash)}</b></div>
       <button class="pill keys" data-shop="anahtar" title="Anahtar: bekleme sürelerini anında bitirir"><span class="kic">🔑</span><b>${S.keys || 0}</b><i>+</i></button>
       ${Q.turboOn(S) ? `<div class="pill turbo" title="Turbo: satış kârı 2 katı">⚡<span class="t2"> 2×</span> <b id="turbot">${mmss(S.turboMs)}</b></div>` : ''}
       <button class="pill rankb" data-rank title="Sıralama">🏆 <b>${myRank}.</b></button>
