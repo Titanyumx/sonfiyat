@@ -503,6 +503,32 @@ button.gcard.newg{cursor:pointer;color:inherit;text-align:left}
 /* telefon köşeleri ve çentik: içerik yuvarlak köşelerin altında kalmasın */
 #app{padding:env(safe-area-inset-top) max(env(safe-area-inset-right),6px) env(safe-area-inset-bottom) max(env(safe-area-inset-left),6px);box-sizing:border-box}
 @media (max-height:520px){.start-l>p{display:none}}
+.bank2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:14px;align-items:start}
+.bankL,.bankR{display:flex;flex-direction:column;gap:6px;min-width:0}
+.bank2 .gauge{width:90px}.bank2 .cbig{font-size:30px}
+.bankR .quick{flex-wrap:wrap}.bankR .loanq .kv{padding:3px 0}
+@media (orientation:portrait){.bank2{grid-template-columns:minmax(0,1fr)}}
+@media (max-height:520px){
+  .modal .lotm{max-height:120px}.modal .lotm svg{max-height:110px}
+  .modal .reqs{grid-template-columns:repeat(2,minmax(0,1fr));gap:4px}.modal .reqs span{padding:3px 8px;font-size:12px}
+  .modal .bidbox{padding:8px 12px}.modal .bigbid{font-size:26px}
+  .modal .bids>div{padding:4px 10px}.modal .lotcars .lc{padding:6px 10px}
+  .modal .specs>div{padding:4px}.modal h2{margin:4px 0}
+}
+.note.good{color:var(--good);border-color:#2f8f6a66}
+.chip-btn.rej{color:var(--bad);border-color:#ef5a5a66}
+@media (max-height:520px){
+  .bankR .bankc{padding:4px 9px}.bankR .bankc small{display:none}.bankR .bk{width:30px;height:30px;font-size:12px}
+  .bankR .money-in input{padding:6px 10px;font-size:18px}
+  .bankR .quick{flex-wrap:nowrap;gap:4px}.bankR .quick .chip-btn{padding:4px 6px;font-size:12px;flex:1}
+  .bankR .loanq{display:grid;grid-template-columns:1fr 1fr;column-gap:14px}.bankR .loanq .kv{font-size:13px}
+  .bank2 .credit2 small{font-size:11.5px}
+}
+.panel.bank.wideb{max-width:none}
+@media (max-height:520px){
+  .bankR .banks{flex-direction:row;gap:5px}.bankR .bankc{flex:1;min-width:0}.bankR .bankc b{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .bankR{gap:5px}.bankR .loanq .kv b{white-space:nowrap}
+}
 </style></head>
 <body><div id="app"></div>
 <script>// Türkiye'nin 81 ili ve 973 ilçesi (2013 sonrası idari yapı)
@@ -1650,6 +1676,7 @@ const P3 = (() => {
       return { ok: true };
     }
     if (capHit(lot)) return { ok: false, msg: 'Tavan teklife ulaşıldı; ihale tavanı ilk veren kazanır.' };
+    { const hb = highBid(lot); if (hb && hb.me) return { ok: false, msg: 'En yüksek teklif zaten sende.' }; }
     amt = Math.min(capOf(lot), roundP(amt)); if (amt < minBid(lot)) return { ok: false, msg: `En az ${fmt(minBid(lot), lot.cc)} teklif ver.` };
     lot.bids.push({ who: 'Sen', amt, me: true, t: now });
     if (amt >= capOf(lot)) { if (lot.state === 'idle') lot.state = 'live'; lot.endsAt = now + 1500; lot.botAt = 0; return { ok: true, cap: true }; }
@@ -2844,7 +2871,7 @@ window.P6 = P6;</script>
     const slotW = 140;
     const startX = 400 - (lot.length * slotW) / 2;
     const parked = lot.map((c, i) => `<g transform="translate(${startX + i * slotW + 5} 146)">${car(c.cls, c.color, { w: 130, tag: c.tag, tagX: 63 })}</g>`).join('');
-    return `<svg viewBox="0 0 800 250" class="scene" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    return `<svg viewBox="0 0 800 250" class="scene" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
       <defs><linearGradient id="sky${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${top}"/><stop offset="1" stop-color="${bot}"/></linearGradient>
         <linearGradient id="glass${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#bfe0f5"/><stop offset="1" stop-color="#4b6f8e"/></linearGradient></defs>
       <rect width="800" height="250" fill="url(#sky${id})"/>
@@ -3596,25 +3623,25 @@ window.P6 = P6;</script>
   function bankHtml() {
     const loans = S.loans || [], lim = E.loanLimit(S), debt = E.debtOf(S), room0 = E.loanRoom(S);
     const B = E.BANKS[bankSel], okB = S.credit >= B.minCredit;
-    return `<div class="bankgrid"><div class="credit2">${gauge(S.credit)}<div><small class="cap">KREDİ PUANI</small><b class="cbig ${E.creditTone(S.credit)}">${Math.round(S.credit)}</b><span class="tag">${E.creditLabel(S.credit)}</span></div></div>
-        <small class="muted">Zamanında taksit +30 (muhasebeciyle +40) · erken kapama +40 · artı kasayla haftalık +10 · eksi kasa her gün −5 · ödenemeyen taksit −120 · ödenemeyen ihale −80</small></div>
+    return `<div class="bank2"><div class="bankL"><div class="bankgrid"><div class="credit2">${gauge(S.credit)}<div><small class="cap">KREDİ PUANI</small><b class="cbig ${E.creditTone(S.credit)}">${Math.round(S.credit)}</b><span class="tag">${E.creditLabel(S.credit)}</span></div></div>
+        <small class="muted">Zamanında taksit +30 (muhasebeciyle +40) · erken kapama +40 · artı kasayla haftalık +10 · eksi kasa her gün −2 (350 altına indirmez) · ödenemeyen taksit −120 · ödenemeyen ihale −80</small></div>
       <small class="cap">KREDİLERİM · ${loans.length}/3</small>
       ${loans.length ? loans.map(L => `<div class="loan"><span class="bk" style="background:${E.BANKS[L.bank].color}">${E.BANKS[L.bank].short}</span><div><b>${E.BANKS[L.bank].name}</b><small>${fmt(L.principal, 'TR')} çekildi · toplam ${fmt(L.total, 'TR')} · %${(L.rate * 100).toFixed(1).replace('.', ',')}/ay</small><small>Taksit ${fmt(L.inst, 'TR')} · ${L.left}/${L.months} kaldı · sonraki ${Math.max(0, L.next - S.day)} gün sonra</small></div><button class="btn sm2" data-repay="${L.id}">Kapat · ${fmtS(E.earlyPayoff(S, L), 'TR')}</button></div>`).join('') : '<p class="muted small">Aktif kredin yok.</p>'}
       <div class="limitbar"><div class="row small"><span>Toplam borç sınırı ${fmtS(lim, 'TR')}</span><span>Kullanılan ${fmtS(debt, 'TR')}</span></div><i class="tbar"><u style="width:${lim ? Math.min(100, debt / lim * 100) : 0}%"></u></i></div>
-      <small class="cap">KREDİ TEKLİFLERİ</small>
+      </div><div class="bankR"><small class="cap">KREDİ TEKLİFLERİ</small>
       <div class="banks">${Object.entries(E.BANKS).map(([id, b]) => `<button class="bankc ${bankSel === id ? 'on' : ''} ${S.credit < b.minCredit ? 'no' : ''}" data-bank="${id}"><span class="bk" style="background:${b.color}">${b.short}</span><span><b>${b.name}</b><small>${b.desc} · puan ≥ ${b.minCredit}</small></span></button>`).join('')}</div>
       ${!okB ? `<p class="note">${B.name} için kredi puanı en az ${B.minCredit} olmalı. Seninki ${Math.round(S.credit)}.</p>` : room0 <= 0 ? '<p class="note">Toplam borç sınırına ulaştın. Önce bir krediyi kapat ya da kredi puanını yükselt.</p>' : `
         <div class="money-in"><input id="loanamt" type="text" inputmode="numeric" value="${E.roundP(Math.min(room0, lim / 2)).toLocaleString('tr-TR')}"><span>₺</span></div>
         <div class="quick">${Object.keys(E.LOAN_TERMS).map(Number).map(m => `<button class="chip-btn ${loanMonths === m ? 'on' : ''}" data-months="${m}">${m} ay · %${(E.loanRate(S, m, bankSel) * 100).toFixed(1).replace('.', ',')}</button>`).join('')}</div>
         <div class="loanq" id="loanq"></div>
         <button class="btn pri wide" data-loan>${B.name}'dan kredi çek</button>`}
-      ${(S.loanHist || []).length ? `<details class="hist"><summary>Kredi geçmişi</summary>${S.loanHist.map(h => `<div class="kv small"><span>G${h.day} · ${esc(h.text)}</span><b class="${h.amt >= 0 ? 'pos' : 'neg'}">${h.amt ? fmtS(h.amt, 'TR') : ''}</b></div>`).join('')}</details>` : ''}`;
+      ${(S.loanHist || []).length ? `<details class="hist"><summary>Kredi geçmişi</summary>${S.loanHist.map(h => `<div class="kv small"><span>G${h.day} · ${esc(h.text)}</span><b class="${h.amt >= 0 ? 'pos' : 'neg'}">${h.amt ? fmtS(h.amt, 'TR') : ''}</b></div>`).join('')}</details>` : ''}</div></div>`;
   }
   function loanQuoteHtml(q) {
     return `<div class="kv"><span>Aylık faiz</span><b>%${(q.rate * 100).toFixed(1).replace('.', ',')}</b></div>
       <div class="kv"><span>Aylık taksit</span><b>${fmt(q.inst, 'TR')}</b></div>
       <div class="kv"><span>Toplam faiz</span><b class="neg">${fmt(q.interest, 'TR')}</b></div>
-      <div class="kv tot"><span>Geri ödenecek toplam</span><b>${fmt(q.total, 'TR')}</b></div>`;
+      <div class="kv tot"><span>Toplam ödeme</span><b>${fmt(q.total, 'TR')}</b></div>`;
   }
   function updLoanQuote() {
     const inp = $('#loanamt'), box = $('#loanq'); if (!inp || !box) return;
@@ -3680,6 +3707,7 @@ window.P6 = P6;</script>
     const btns = lot.state === 'done' ? '<button class="btn wide" data-close>Kapat</button>'
       : T.closed ? (lot.state === 'sealed' ? '' : `<div class="offer-row"><div class="money-in"><input id="sealamt" type="text" inputmode="numeric" value="${E.roundP(lot.app * 0.7).toLocaleString('tr-TR')}"><span>${COUNTRIES[cc()].sym}</span></div><button class="btn pri" data-seal="${lot.id}" ${ce.ok || lot.joined ? '' : 'disabled'}>Zarfı ver</button></div>`)
         : P.capHit(lot) ? `<p class="note">Tavan teklife ulaşıldı · ihaleyi ${esc(hb.who)} alıyor.</p>`
+        : hb && hb.me && lot.state === 'live' ? `<p class="note good">En yüksek teklif sende. Rakip teklif verirse yeniden teklif verebilirsin.</p>`
         : `<div class="row2"><button class="btn pri" data-bid="${lot.id}:1" ${ce.ok || lot.joined ? '' : 'disabled'}>Teklif ver · ${MS(P.minBid(lot))}</button><button class="btn" data-bid="${lot.id}:5" ${ce.ok || lot.joined ? '' : 'disabled'}>+5 · ${MS(Math.min(P.capOf(lot), P.minBid(lot) + lot.step * 4))}</button><button class="btn gold" data-bid="${lot.id}:cap" ${ce.ok || lot.joined ? '' : 'disabled'}>Tavan · ${MS(P.capOf(lot))}</button></div>`;
     return `${xBtn}<div class="mcol art-col">
         <div class="mart lotm">${lotArt(lot, 260)}<span class="badge2">${T.name.toLocaleUpperCase('tr')}</span></div>
@@ -3693,10 +3721,9 @@ window.P6 = P6;</script>
         <div class="bidbox"><div class="row"><small class="cap">${T.closed ? 'ZARF' : 'EN YÜKSEK TEKLİF'}</small>${timer ? `<b class="timer">⏱ ${tleft(timer)}</b>` : ''}</div>${top}<i class="tbar"><u style="width:${prog}%"></u></i></div>
         <small class="cap">KATILIM ŞARTI</small>
         <div class="reqs"><span class="${ce.cash ? 'ok' : 'no'}">${ce.cash ? '✓' : '✕'} Kasa ≥ ${MS(ce.need)}</span><span class="${ce.credit ? 'ok' : 'no'}">${ce.credit ? '✓' : '✕'} Kredi puanı ≥ ${ce.minCredit} · sende ${Math.round(S.credit)}</span><span class="${ce.office ? 'ok' : 'no'}">${ce.office ? '✓' : '✕'} Ofis ≥ ${ce.minOffice}</span><span class="${ce.space || lot.joined ? 'ok' : 'no'}">${ce.space || lot.joined ? '✓' : '✕'} ${lot.cars.length} boş yer</span></div>
-        ${!T.closed ? `<small class="cap">TEKLİF GEÇMİŞİ</small><div class="bids">${lot.bids.length ? [...lot.bids].reverse().slice(0, 6).map(b => `<div class="${b.me ? 'me' : ''}"><span>${esc(b.who)}</span><b>${MS(b.amt)}</b></div>`).join('') : '<p class="muted small">İlk teklifi sen ver. Rakipler sen girince teklif verir.</p>'}</div>` : ''}
+        ${!T.closed ? `<small class="cap">TEKLİF GEÇMİŞİ</small><div class="bids">${lot.bids.length ? [...lot.bids].reverse().slice(0, 3).map(b => `<div class="${b.me ? 'me' : ''}"><span>${esc(b.who)}</span><b>${MS(b.amt)}</b></div>`).join('') : '<p class="muted small">İlk teklifi sen ver. Rakipler sen girince teklif verir.</p>'}</div>` : ''}
         ${btns}
-        <p class="small capnote">Tavan teklif <b>${MS(P.capOf(lot))}</b>: kazananın kâr edebilmesi için bunun üstüne teklif verilemez. Tavana ilk ulaşan ihaleyi alır${T.closed ? '; zarfın tavanı geçemez' : ''}.</p>
-        <p class="muted small">İlk teklifte teminat bloke edilir. Kazanırsan kalan tutar kasadan çekilir; ödeyemezsen teminat yanar ve kredi puanın düşer.</p>
+        <p class="small capnote">Tavan teklif <b>${MS(P.capOf(lot))}</b>: kazananın kâr edebilmesi için bunun üstüne teklif verilemez. Tavana ilk ulaşan ihaleyi alır${T.closed ? '; zarfın tavanı geçemez' : ''}. İlk teklifte teminat bloke edilir; kazanıp ödeyemezsen teminat yanar.</p>
       </div>`;
   }
 
@@ -3847,7 +3874,7 @@ window.P6 = P6;</script>
         ${n.done ? `<button class="btn pri wide" data-close>${n.result === 'deal' ? (n.mode === 'sell' ? `Satıldı · kâr ${MS(n.profit, n.cc)}` : 'Galeriye götür') : 'Kapat'}</button>` : `
           <div class="offer-row"><div class="money-in"><input id="offer" type="text" inputmode="numeric" value="${inputVal.toLocaleString('tr-TR')}"><span>${COUNTRIES[n.cc].sym}</span></div>
           <button class="btn pri" data-send>${n.mode === 'buy' ? 'Teklif ver' : 'Fiyat söyle'}</button></div>
-          <div class="quick">${chips}<button class="chip-btn acc" data-accept>${n.mode === 'buy' ? 'Bu fiyata al' : 'Teklifi kabul et'}</button></div>`}
+          <div class="quick">${chips}<button class="chip-btn acc" data-accept>${n.mode === 'buy' ? 'Bu fiyata al' : 'Teklifi kabul et'}</button><button class="chip-btn rej" data-reject>${n.mode === 'buy' ? 'Vazgeç' : 'Reddet'}</button></div>`}
       </div>`;
   }
 
@@ -3940,6 +3967,7 @@ window.P6 = P6;</script>
       const P = PERSONALITIES[l.seller];
       chat = [{ text: `${P.hint[1] || P.hint[0]} Aracı ${M(l.ask)} istiyorum.` }]; modal = { type: 'nego' }; render();
     });
+    on('[data-reject]', () => { if (nego && nego.mode === 'sell') { const W0 = E.W(S, nego.cc); W0.customers = W0.customers.filter(c => c.id !== nego.customerId); toast('Müşteri teklifini reddettin, galeriden ayrıldı.'); } nego = null; modal = null; save(); render(); });
     on('[data-talk]', b => { const c = w().customers.find(x => x.id === b.dataset.talk); nego = E.startSellNego(S, c, cc()); chat = [nego.opening]; modal = { type: 'nego' }; save(); render(); });
     on('[data-offer]', b => { $('#offer').value = Number(b.dataset.offer).toLocaleString('tr-TR'); });
     on('[data-setprice]', b => { $('#listprice').value = Number(b.dataset.setprice).toLocaleString('tr-TR'); });
