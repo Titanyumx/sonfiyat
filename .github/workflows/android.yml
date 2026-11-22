@@ -1,0 +1,36 @@
+# Son Fiyat? – telefona kurulabilen test APK'sı üretir
+# Sonuç: Actions → son çalışma → Artifacts → sonfiyat-apk
+name: Android APK
+on:
+  push:
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: 17 }
+      - name: Dosyaları yerleştir
+        run: |
+          mkdir -p www assets
+          cp index.html www/index.html
+          cp icon.png assets/icon-only.png
+          cp icon.png assets/icon-foreground.png
+          cp splash.png assets/splash.png
+          cp splash.png assets/splash-dark.png
+      - run: npm install
+      - run: npx cap add android
+      - name: Yatay ekran
+        run: sed -i 's/<activity /<activity android:screenOrientation="sensorLandscape" /' android/app/src/main/AndroidManifest.xml
+      - name: İkon ve açılış ekranı
+        run: npx capacitor-assets generate --android --iconBackgroundColor '#0f1319' --splashBackgroundColor '#0f1319' || true
+      - run: npx cap sync android
+      - name: APK derle
+        run: cd android && chmod +x gradlew && ./gradlew assembleDebug
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sonfiyat-apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
