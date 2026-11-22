@@ -563,6 +563,7 @@ button.gcard.newg{cursor:pointer;color:inherit;text-align:left}
 
 .fcard .fic svg{width:52px;height:46px;display:block}.fart.off,.chart2.off{filter:grayscale(.55) brightness(.85)}.chcard .chic svg{width:100%;height:100%;display:block;border-radius:8px}.chcard .chic{padding:0;overflow:hidden}
 .brbulk{display:flex;gap:6px;flex-wrap:wrap;align-items:center}.brbulk select{flex:1 1 180px;min-width:0;background:var(--card2);color:var(--txt);border:1px solid var(--line);border-radius:10px;padding:8px}.brbulk .btn{flex:1 1 auto}
+.brcc{display:flex;gap:6px;flex-wrap:wrap}.brcc button{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;flex:0 0 auto;min-height:0}.brcc .flag{flex:none}
 </style></head>
 <body><div id="app"></div>
 <script>// Türkiye'nin 81 ili ve 973 ilçesi (2013 sonrası idari yapı)
@@ -767,35 +768,74 @@ const DATA = (() => {
   const LEGACY = { bagcilar: 'istanbul-bagcilar', esenyurt: 'istanbul-esenyurt', pendik: 'istanbul-pendik', umraniye: 'istanbul-umraniye', kadikoy: 'istanbul-kadikoy', besiktas: 'istanbul-besiktas' };
   for (const il of Object.keys(ILCE)) { const k = slug(il); if (LEGACY[k]) continue; const ps = CITYLIST.TR[k].places; LEGACY[k] = ps.find(p => CITIES.TR[p].name === il) || [...ps].sort((a, b) => CITIES.TR[b].rent - CITIES.TR[a].rent)[0]; }
   for (const k of Object.keys(CITYLIST.TR)) { const ps = CITYLIST.TR[k].places; CITYLIST.TR[k].center = LEGACY[k] || ps[0]; }
-  const add = (cc, name, rent, budget, demand, desc) => { const k = slug(name); CITIES[cc][k] = { name, rent, budget, cust: 1, demand, desc, tier: 1, w: budget, unlockCash: 0 }; CITYLIST[cc][k] = { name, tier: 1, places: [k], unlockCashTRY: Math.round(budget * 10e6 / 1e6) * 1e6 }; };
-  add('DE', 'Berlin', 1500, 1.0, dm(1.1, 1.05, 0.95, 1.0, 1.0, 0.9, 1.0), 'Başkent, dengeli');
-  add('DE', 'Münih', 2100, 1.4, dm(0.85, 1.0, 1.15, 0.85, 1.3, 1.25, 1.1), 'Zengin, lüks ve spor');
-  add('DE', 'Hamburg', 1700, 1.15, dm(0.95, 1.1, 1.05, 1.1, 1.1, 1.0, 1.0), 'Liman şehri, ticari');
-  add('DE', 'Frankfurt', 1800, 1.25, dm(0.9, 1.0, 1.1, 0.9, 1.25, 1.05, 0.95), 'Finans merkezi');
-  add('DE', 'Köln', 1400, 1.0, dm(1.05, 1.1, 1.0, 1.05, 0.95, 0.95, 1.0), 'Aile talebi');
-  add('DE', 'Stuttgart', 1600, 1.2, dm(0.9, 1.05, 1.05, 1.0, 1.2, 1.3, 1.15), 'Otomobil şehri');
-  add('GB', 'Londra', 2000, 1.4, dm(0.95, 0.95, 1.05, 0.85, 1.3, 1.25, 1.1), 'Pahalı, lüks talebi');
-  add('GB', 'Manchester', 1200, 1.0, dm(1.1, 1.1, 1.0, 1.05, 0.9, 0.95, 0.95), 'Dengeli');
-  add('GB', 'Birmingham', 1100, 0.95, dm(1.15, 1.1, 0.95, 1.15, 0.85, 0.85, 0.9), 'Ticari ve ekonomi');
-  add('GB', 'Liverpool', 1000, 0.9, dm(1.15, 1.05, 0.95, 1.1, 0.8, 0.9, 1.0), 'Ucuz kira');
-  add('GB', 'Edinburgh', 1200, 1.1, dm(1.0, 1.1, 1.15, 0.95, 1.0, 0.9, 1.15), 'SUV ve klasik');
-  add('US', 'New York', 3200, 1.4, dm(1.0, 0.95, 1.0, 0.9, 1.3, 1.1, 1.0), 'Pahalı, lüks talebi');
-  add('US', 'Los Angeles', 2800, 1.35, dm(0.95, 0.95, 1.1, 0.9, 1.25, 1.35, 1.25), 'Spor ve klasik');
-  add('US', 'Houston', 1700, 1.05, dm(0.9, 1.0, 1.35, 1.3, 0.95, 0.9, 1.0), 'Büyük SUV ve kamyonet');
-  add('US', 'Miami', 2200, 1.25, dm(0.95, 0.95, 1.1, 0.85, 1.25, 1.3, 1.15), 'Spor araç');
-  add('US', 'Chicago', 2000, 1.1, dm(1.05, 1.1, 1.1, 1.05, 1.05, 0.95, 1.0), 'Dengeli');
-  add('US', 'Detroit', 1300, 0.9, dm(1.05, 1.05, 1.2, 1.2, 0.9, 1.0, 1.3), 'Ucuz kira, klasik');
-  add('JP', 'Tokyo', 330000, 1.3, dm(1.15, 1.0, 0.95, 0.85, 1.2, 1.1, 1.1), 'Kalabalık ve zengin');
-  add('JP', 'Osaka', 260000, 1.1, dm(1.15, 1.05, 0.95, 0.95, 1.0, 1.0, 1.1), 'Dengeli');
-  add('JP', 'Nagoya', 230000, 1.05, dm(1.1, 1.05, 1.0, 1.0, 1.0, 1.05, 1.2), 'Otomobil şehri');
-  add('JP', 'Yokohama', 280000, 1.15, dm(1.1, 1.1, 1.0, 0.9, 1.1, 1.05, 1.0), 'Liman şehri');
-  add('JP', 'Fukuoka', 200000, 0.95, dm(1.2, 1.05, 0.95, 1.0, 0.9, 0.95, 1.05), 'Ucuz kira');
-  add('AE', 'Dubai', 9000, 1.6, dm(0.7, 0.9, 1.2, 0.8, 1.4, 1.45, 1.2), 'Lüks ve spor merkezi');
-  add('AE', 'Abu Dabi', 8000, 1.5, dm(0.75, 0.95, 1.25, 0.85, 1.35, 1.3, 1.1), 'Zengin, SUV talebi');
-  add('AE', 'Şarika', 5000, 1.0, dm(1.1, 1.1, 1.05, 1.1, 0.9, 0.95, 0.9), 'Ucuz kira');
-  add('KZ', 'Almatı', 4500000, 1.0, dm(1.05, 1.05, 1.25, 1.1, 1.0, 0.95, 0.9), 'En büyük pazar');
-  add('KZ', 'Astana', 4000000, 1.05, dm(1.0, 1.05, 1.3, 1.05, 1.05, 0.9, 0.85), 'Başkent, SUV talebi');
-  add('KZ', 'Şımkent', 2500000, 0.8, dm(1.2, 1.1, 1.1, 1.25, 0.7, 0.75, 0.8), 'Ucuz kira, ticari');
+  // yabancı şehirler: [ad, enlem, boylam, haftalık kira (yerel), bütçe, talep(E,A,S,T,L,Sp,K), açıklama, 'semt:zenginlik,...']
+  const FOREIGN = {
+    DE: [['Berlin', 52.52, 13.40, 1500, 1.0, [1.1, 1.05, .95, 1, 1, .9, 1], 'Başkent, dengeli', 'Mitte:1.2,Charlottenburg:1.45,Kreuzberg:1,Neukölln:.8,Spandau:.85'],
+      ['Münih', 48.14, 11.58, 2100, 1.4, [.85, 1, 1.15, .85, 1.3, 1.25, 1.1], 'Zengin, lüks ve spor', 'Altstadt:1.5,Schwabing:1.45,Bogenhausen:1.6,Pasing:1.1'],
+      ['Hamburg', 53.55, 9.99, 1700, 1.15, [.95, 1.1, 1.05, 1.1, 1.1, 1, 1], 'Liman şehri, ticari', 'Altona:1.15,Eimsbüttel:1.2,Blankenese:1.7,Harburg:.85'],
+      ['Frankfurt', 50.11, 8.68, 1800, 1.25, [.9, 1, 1.1, .9, 1.25, 1.05, .95], 'Finans merkezi', 'Innenstadt:1.3,Sachsenhausen:1.2,Westend:1.6,Höchst:.85'],
+      ['Köln', 50.94, 6.96, 1400, 1.0, [1.05, 1.1, 1, 1.05, .95, .95, 1], 'Aile talebi', 'Innenstadt:1.1,Ehrenfeld:1,Lindenthal:1.35,Porz:.85'],
+      ['Stuttgart', 48.78, 9.18, 1600, 1.2, [.9, 1.05, 1.05, 1, 1.2, 1.3, 1.15], 'Otomobil şehri', 'Mitte:1.2,Degerloch:1.4,Bad Cannstatt:.95,Zuffenhausen:1.05'],
+      ['Düsseldorf', 51.23, 6.78, 1600, 1.2, [.95, 1, 1.05, .95, 1.2, 1.1, 1], 'Moda ve zengin müşteri', 'Altstadt:1.2,Oberkassel:1.5,Bilk:1'],
+      ['Dortmund', 51.51, 7.47, 1100, 0.9, [1.15, 1.1, 1, 1.15, .85, .9, .95], 'Ucuz kira, ekonomi', 'Innenstadt:.95,Hörde:.9,Hombruch:1.1'],
+      ['Leipzig', 51.34, 12.37, 1000, 0.85, [1.2, 1.1, .95, 1.05, .8, .85, 1], 'Doğu Almanya, ucuz araç', 'Zentrum:1,Gohlis:1.1,Grünau:.75'],
+      ['Hannover', 52.37, 9.73, 1200, 1.0, [1.05, 1.1, 1, 1.05, .95, .95, 1], 'Fuar şehri, dengeli', 'Mitte:1.05,List:1.15,Linden:.9']],
+    GB: [['Londra', 51.51, -0.13, 2000, 1.4, [.95, .95, 1.05, .85, 1.3, 1.25, 1.1], 'Pahalı, lüks talebi', 'Westminster:1.6,Kensington:1.75,Camden:1.3,Hackney:1.05,Croydon:.9'],
+      ['Manchester', 53.48, -2.24, 1200, 1.0, [1.1, 1.1, 1, 1.05, .9, .95, .95], 'Dengeli', 'City Centre:1.15,Didsbury:1.3,Trafford:1.1,Salford:.85'],
+      ['Birmingham', 52.49, -1.89, 1100, .95, [1.15, 1.1, .95, 1.15, .85, .85, .9], 'Ticari ve ekonomi', 'City Centre:1.05,Edgbaston:1.3,Solihull:1.35,Aston:.75'],
+      ['Liverpool', 53.41, -2.98, 1000, .9, [1.15, 1.05, .95, 1.1, .8, .9, 1], 'Ucuz kira', 'City Centre:1,Woolton:1.25,Anfield:.75'],
+      ['Edinburgh', 55.95, -3.19, 1200, 1.1, [1, 1.1, 1.15, .95, 1, .9, 1.15], 'SUV ve klasik', 'Old Town:1.15,New Town:1.4,Leith:.95'],
+      ['Glasgow', 55.86, -4.25, 1000, .95, [1.1, 1.1, 1.05, 1.05, .9, .9, 1], 'İskoçya\'nın en büyüğü', 'City Centre:1,West End:1.25,Govan:.75'],
+      ['Bristol', 51.45, -2.59, 1300, 1.15, [1, 1.1, 1.05, .95, 1.1, 1, 1.05], 'Varlıklı aileler', 'Clifton:1.45,Harbourside:1.15,Bedminster:.95'],
+      ['Leeds', 53.80, -1.55, 1050, .95, [1.1, 1.1, 1, 1.1, .9, .9, .95], 'Öğrenci ve aile', 'City Centre:1.05,Roundhay:1.3,Headingley:1.1'],
+      ['Cardiff', 51.48, -3.18, 950, .9, [1.15, 1.1, 1, 1.05, .85, .9, 1], 'Galler başkenti', 'City Centre:1,Cardiff Bay:1.2,Ely:.75']],
+    US: [['New York', 40.71, -74.01, 3200, 1.4, [1, .95, 1, .9, 1.3, 1.1, 1], 'Pahalı, lüks talebi', 'Manhattan:1.8,Brooklyn:1.2,Queens:1,Staten Island:1.05,Bronx:.8'],
+      ['Los Angeles', 34.05, -118.24, 2800, 1.35, [.95, .95, 1.1, .9, 1.25, 1.35, 1.25], 'Spor ve klasik', 'Beverly Hills:1.9,Santa Monica:1.6,Downtown:1.1,Long Beach:1,Compton:.75'],
+      ['Houston', 29.76, -95.37, 1700, 1.05, [.9, 1, 1.35, 1.3, .95, .9, 1], 'Büyük SUV ve kamyonet', 'River Oaks:1.6,Downtown:1.05,Katy:1.1,Pasadena:.85'],
+      ['Miami', 25.76, -80.19, 2200, 1.25, [.95, .95, 1.1, .85, 1.25, 1.3, 1.15], 'Spor araç', 'Miami Beach:1.6,Brickell:1.45,Coral Gables:1.4,Little Havana:.85'],
+      ['Chicago', 41.88, -87.63, 2000, 1.1, [1.05, 1.1, 1.1, 1.05, 1.05, .95, 1], 'Dengeli', 'The Loop:1.25,Lincoln Park:1.45,Evanston:1.25,South Side:.75'],
+      ['Detroit', 42.33, -83.05, 1300, .9, [1.05, 1.05, 1.2, 1.2, .9, 1, 1.3], 'Ucuz kira, klasik', 'Grosse Pointe:1.45,Dearborn:1,Downtown:.95'],
+      ['Las Vegas', 36.17, -115.14, 1800, 1.15, [.95, .95, 1.05, .9, 1.2, 1.35, 1.2], 'Gösteriş ve spor', 'The Strip:1.35,Henderson:1.15,North Las Vegas:.8'],
+      ['Dallas', 32.78, -96.80, 1700, 1.1, [.9, 1, 1.3, 1.25, 1.05, .95, 1], 'Kamyonet ülkesi', 'Uptown:1.35,Plano:1.25,Irving:1,Oak Cliff:.8'],
+      ['Seattle', 47.61, -122.33, 2300, 1.3, [1, 1.05, 1.15, .9, 1.15, .95, .95], 'Teknoloji zengini', 'Bellevue:1.6,Downtown:1.35,Tacoma:.95'],
+      ['Atlanta', 33.75, -84.39, 1600, 1.05, [1, 1.05, 1.15, 1.05, 1.05, 1, 1], 'Güneyin merkezi', 'Buckhead:1.55,Midtown:1.25,East Point:.8']],
+    JP: [['Tokyo', 35.68, 139.69, 330000, 1.3, [1.15, 1, .95, .85, 1.2, 1.1, 1.1], 'Kalabalık ve zengin', 'Minato:1.8,Shibuya:1.5,Shinjuku:1.35,Setagaya:1.3,Adachi:.85'],
+      ['Osaka', 34.69, 135.50, 260000, 1.1, [1.15, 1.05, .95, .95, 1, 1, 1.1], 'Dengeli', 'Kita:1.3,Chuo:1.25,Tennoji:1,Nishinari:.75'],
+      ['Nagoya', 35.18, 136.91, 230000, 1.05, [1.1, 1.05, 1, 1, 1, 1.05, 1.2], 'Otomobil şehri', 'Naka:1.25,Chikusa:1.15,Minato:.9'],
+      ['Yokohama', 35.44, 139.64, 280000, 1.15, [1.1, 1.1, 1, .9, 1.1, 1.05, 1], 'Liman şehri', 'Aoba:1.4,Naka:1.2,Tsurumi:.9'],
+      ['Fukuoka', 33.59, 130.40, 200000, .95, [1.2, 1.05, .95, 1, .9, .95, 1.05], 'Ucuz kira', 'Chuo:1.2,Hakata:1.15,Higashi:.9'],
+      ['Sapporo', 43.06, 141.35, 180000, .9, [1.1, 1.1, 1.3, 1.05, .9, .85, 1], 'Kar ülkesi, 4x4 talebi', 'Chuo:1.15,Kita:1,Atsubetsu:.85'],
+      ['Kyoto', 35.01, 135.77, 240000, 1.1, [1.15, 1.05, .9, .9, 1.05, .95, 1.4], 'Tarihi şehir, klasik', 'Higashiyama:1.35,Nakagyo:1.25,Fushimi:.95'],
+      ['Kobe', 34.69, 135.20, 230000, 1.1, [1.1, 1.1, 1, .95, 1.1, 1, 1.05], 'Varlıklı liman şehri', 'Higashinada:1.4,Chuo:1.2,Nagata:.85'],
+      ['Hiroshima', 34.39, 132.46, 190000, .95, [1.15, 1.1, 1, 1.05, .9, 1, 1], 'Sanayi ve otomotiv', 'Naka:1.15,Minami:1,Saeki:.85']],
+    AE: [['Dubai', 25.20, 55.27, 9000, 1.6, [.7, .9, 1.2, .8, 1.4, 1.45, 1.2], 'Lüks ve spor merkezi', 'Palm Jumeirah:1.9,Dubai Marina:1.65,Downtown:1.6,Deira:.9,Al Quoz:.8'],
+      ['Abu Dabi', 24.45, 54.38, 8000, 1.5, [.75, .95, 1.25, .85, 1.35, 1.3, 1.1], 'Zengin, SUV talebi', 'Yas Island:1.55,Corniche:1.45,Khalifa City:1.15,Mussafah:.8'],
+      ['Şarika', 25.35, 55.42, 5000, 1.0, [1.1, 1.1, 1.05, 1.1, .9, .95, .9], 'Ucuz kira', 'Al Majaz:1.05,Al Nahda:.95,Industrial Area:.75'],
+      ['Acman', 25.41, 55.45, 4200, .9, [1.15, 1.1, 1.05, 1.15, .85, .9, .9], 'Ekonomi ve ticari', 'Al Zorah:1.25,Al Nuaimiya:.9,Al Rashidiya:.85'],
+      ['Resülhayme', 25.79, 55.94, 4500, .95, [1.05, 1.05, 1.2, 1.05, .95, 1, 1], 'Dağ yolları, SUV', 'Al Hamra:1.3,Al Nakheel:.95,Al Dhait:.85'],
+      ['Füceyre', 25.13, 56.33, 4000, .9, [1.1, 1.05, 1.15, 1.1, .9, .9, .95], 'Liman ve ticaret', 'Al Faseel:1.1,Merkez:.95,Dibba:.85'],
+      ['Al Ain', 24.21, 55.74, 5500, 1.1, [.9, 1.05, 1.3, .95, 1.1, 1.05, 1.15], 'Vaha şehri, SUV ve klasik', 'Al Jimi:1.1,Al Mutaredh:.9,Zakher:.85']],
+    KZ: [['Almatı', 43.24, 76.89, 4500000, 1.0, [1.05, 1.05, 1.25, 1.1, 1, .95, .9], 'En büyük pazar', 'Medeu:1.45,Bostandık:1.3,Almalı:1.05,Türksib:.8,Alatau:.75'],
+      ['Astana', 51.17, 71.45, 4000000, 1.05, [1, 1.05, 1.3, 1.05, 1.05, .9, .85], 'Başkent, SUV talebi', 'Yesil:1.45,Almatı:1,Saryarka:.95,Baykonur:.9'],
+      ['Şımkent', 42.32, 69.60, 2500000, .8, [1.2, 1.1, 1.1, 1.25, .7, .75, .8], 'Ucuz kira, ticari', 'Al-Farabi:1.05,Abay:.9,Enbekşi:.8'],
+      ['Karaganda', 49.80, 73.10, 2300000, .85, [1.15, 1.1, 1.15, 1.25, .75, .75, .85], 'Maden şehri, ticari', 'Kazıbek Bi:1,Merkez:.95,Maykuduk:.8'],
+      ['Aktöbe', 50.28, 57.17, 2200000, .85, [1.15, 1.1, 1.15, 1.2, .8, .8, .85], 'Batının ticaret merkezi', 'Nur Aktöbe:1.1,Merkez:1,Astana:.95'],
+      ['Atırau', 47.09, 51.92, 3200000, 1.05, [.95, 1.05, 1.35, 1.15, 1.05, .9, .85], 'Petrol zengini', 'Zhilgorodok:1.2,Merkez:1.15,Avangard:.95'],
+      ['Pavlodar', 52.29, 76.97, 2000000, .8, [1.2, 1.1, 1.1, 1.2, .75, .75, .8], 'Sanayi, ucuz kira', 'Merkez:.95,Sever:.85,Usolka:.85'],
+      ['Aktav', 43.65, 51.17, 2800000, .95, [1.05, 1.05, 1.2, 1.1, .95, .9, .85], 'Hazar kıyısı', '14. Mikrorayon:1.1,Merkez:1,Priozerny:.85']],
+  };
+  for (const [cc, list] of Object.entries(FOREIGN)) list.forEach(([name, lat, lon, rent, budget, d, desc, dist], idx) => {
+    const ck = slug(name), keys = [], tier = idx < 3 ? 1 : 2, cityTRY = Math.round(budget * 10e6 / 1e6) * 1e6;
+    for (const part of dist.split(',')) { const [dn, ws] = part.split(':'), w = +ws, key = ck + '-' + slug(dn);
+      const lux = Math.max(.6, Math.min(1.5, .55 + .45 * w)), eco = Math.max(.6, Math.min(1.35, 1.45 - .45 * w));
+      CITIES[cc][key] = { name: dn, il: name, tier, w, rent: Math.round(rent * w * w / (rent > 1e5 ? 1000 : 10)) * (rent > 1e5 ? 1000 : 10), budget: budget * w, cust: 1,
+        demand: dm(d[0] * eco, d[1], d[2] * (.9 + .1 * w), d[3] * eco, d[4] * lux, d[5] * lux, d[6] * (.9 + .1 * w)),
+        desc: w >= 1.4 ? 'Zengin semt, lüks ve spor' : w >= 1.1 ? 'Varlıklı, iyi bütçe' : w >= .95 ? desc : 'Ucuz kira, ekonomi talebi',
+        unlockCash: 0, unlockCashTRY: Math.round(cityTRY * .12 * w * w / 50000) * 50000 };
+      keys.push(key); }
+    CITYLIST[cc][ck] = { name, tier, places: keys, unlockCashTRY: cityTRY, center: keys.find(k => CITIES[cc][k].w >= .95 && CITIES[cc][k].w <= 1.2) || keys[0], lat, lon };
+    LEGACY[ck] = CITYLIST[cc][ck].center;
+  });
 
   const STAFF = {
     usta: { name: 'Usta', salary: 20000, desc: 'Tamir yıldız başına %6 ucuz; 3★ ve üstü 1 gün kısa' },
@@ -871,7 +911,8 @@ const fromTRY = (s, cc, tl) => tl / rateOf(s, cc);
 const toTRY = (s, cc, v) => v * rateOf(s, cc);
 const cityOf = (cc, id) => CITIES[cc][id] || CITIES[cc][LEGACY[id]];
 // bir yerin (ilçe/şehir) bağlı olduğu şehir (il) anahtarı
-const cityKeyOf = (cc, place) => cc === 'TR' ? Object.keys(CITYLIST.TR).find(k => CITYLIST.TR[k].places.includes(place)) : place;
+const CK_CACHE = {};
+const cityKeyOf = (cc, place) => { const m = CK_CACHE[cc] || (CK_CACHE[cc] = Object.fromEntries(Object.entries(CITYLIST[cc]).flatMap(([k, c]) => c.places.map(p => [p, k])))); return m[place] || m[LEGACY[place]]; };
 function ensureUnlock(s) {
   if (s.unlock) return s.unlock;
   s.unlock = { cities: {}, places: {} };
@@ -883,21 +924,19 @@ function unlockFree(s, cc, place) {
   const ck = cityKeyOf(cc, place);
   if (ck && !u.cities[cc].includes(ck)) u.cities[cc].push(ck);
   if (!u.places[cc].includes(place)) u.places[cc].push(place);
-  if (cc !== 'TR') for (const p of CITYLIST[cc][ck].places) if (!u.places[cc].includes(p)) u.places[cc].push(p);
 }
 const cityOpen = (s, cc, ck) => !!(s.unlock && (s.unlock.cities[cc] || []).includes(ck));
 const placeOpen = (s, cc, p) => !!(s.unlock && (s.unlock.places[cc] || []).includes(p));
 const REAL_PRICE = { country: '₺69,99', city: '₺9,99' };
 const cityUnlockCash = (s, cc, ck) => { const c = CITYLIST[cc][ck]; return roundP(cc === 'TR' ? c.unlockCash : fromTRY(s, cc, c.unlockCashTRY)); };
-const placeUnlockCash = (s, cc, p) => roundP(cc === 'TR' ? CITIES.TR[p].unlockCash : 0);
+const placeUnlockCash = (s, cc, p) => roundP(cc === 'TR' ? CITIES.TR[p].unlockCash : fromTRY(s, cc, CITIES[cc][p].unlockCashTRY));
 function unlockCity(s, cc, ck, real) {
   ensureUnlock(s); const w = W(s, cc); if (!w) return { ok: false, msg: 'Önce ülkeyi aç.' };
   if (cityOpen(s, cc, ck)) return { ok: false, msg: 'Bu şehir zaten açık.' };
   if (!real) { const cost = cityUnlockCash(s, cc, ck); if (w.cash < cost) return { ok: false, msg: `Kasada ${fmt(cost, cc)} olmalı.` }; w.cash -= cost; }
   else s.purchases = (s.purchases || 0) + 1;
   const u = s.unlock; u.cities[cc] = u.cities[cc] || []; u.cities[cc].push(ck);
-  if (cc !== 'TR') { u.places[cc] = u.places[cc] || []; for (const p of CITYLIST[cc][ck].places) if (!u.places[cc].includes(p)) u.places[cc].push(p); }
-  addLog(s, `${CITYLIST[cc][ck].name} açıldı${cc === 'TR' ? '. Artık ilçelerini açabilirsin' : ''}.`, 'good');
+  addLog(s, `${CITYLIST[cc][ck].name} açıldı. Artık ${cc === 'TR' ? 'ilçelerini' : 'semtlerini'} açabilirsin.`, 'good');
   return { ok: true };
 }
 function unlockPlace(s, cc, p) {
@@ -906,7 +945,7 @@ function unlockPlace(s, cc, p) {
   if (placeOpen(s, cc, p)) return { ok: false, msg: 'Bu ilçe zaten açık.' };
   const cost = placeUnlockCash(s, cc, p); if (w.cash < cost) return { ok: false, msg: `Kasada ${fmt(cost, cc)} olmalı.` };
   w.cash -= cost; s.unlock.places[cc].push(p);
-  addLog(s, `${CITIES[cc][p].name} ilçesi açıldı. Burada galeri açabilirsin.`, 'good'); emit(s, 'unlock', { p });
+  addLog(s, `${CITIES[cc][p].name} ${cc === 'TR' ? 'ilçesi' : 'semti'} açıldı. Burada galeri açabilirsin.`, 'good'); emit(s, 'unlock', { p });
   return { ok: true };
 }
 const galleryOf = (w, gid) => w.galleries.find(g => g.id === gid) || w.galleries[0];
@@ -942,6 +981,7 @@ function migrate(s) {
     if (s.keys === undefined) s.keys = 20;
     for (const [cc, w] of Object.entries(s.countries)) for (const g of w.galleries) if (!CITIES[cc][g.city] && LEGACY[g.city]) g.city = LEGACY[g.city];
     ensureUnlock(s);
+    for (const [cc, ps] of Object.entries(s.unlock.places)) if (cc !== 'TR') s.unlock.places[cc] = [...new Set(ps.map(p => CITIES[cc][p] ? p : LEGACY[p]).filter(Boolean))];
     for (const w of Object.values(s.countries)) for (const [r, st] of Object.entries(w.staff || {})) if (!st.stars) w.staff[r] = { ...st, stars: 3, ...personName('TR') };
     return s;
   }
@@ -1308,7 +1348,7 @@ function unlockCountry(s, cc, real) {
   const K = C(cc), tr = W(s, 'TR');
   if (!real) { if (tr.cash < K.unlockCost) return { ok: false, msg: `Türkiye kasasında ${fmt(K.unlockCost, 'TR')} olmalı.` }; tr.cash -= K.unlockCost; }
   else s.purchases = (s.purchases || 0) + 1;
-  const city = Object.keys(CITIES[cc])[0];
+  const city = CITYLIST[cc][Object.keys(CITYLIST[cc])[0]].center;
   s.countries[cc] = newWorld(s, cc, city);
   const w = s.countries[cc];
   for (let i = 0; i < 7; i++) w.market.push(genListing(s, cc));
@@ -2624,10 +2664,15 @@ const P5 = (() => {
   };
   const CH_MAX = 3, CH_PAYBACK = 60; // şube kendini ~90 günde öder
   const ch = (s, id) => (s.chains = s.chains || {})[id] || (s.chains[id] = { brand: false, br: {} });
-  const wealthF = p => Math.pow((E.CITIES.TR[p] || { w: 0.86 }).w, 1.5);
+  // yer → ülke (ilçe/semt anahtarları ülkeler arasında benzersiz)
+  const PCC = {}; for (const [cc, m] of Object.entries(E.CITIES)) for (const k of Object.keys(m)) PCC[k] = cc;
+  const ccOf = p => PCC[p] || 'TR';
+  const placeOf = p => E.CITIES[ccOf(p)][p] || { w: 0.86 };
+  const CMUL = { TR: 1, DE: 1.3, GB: 1.35, US: 1.4, JP: 1.3, AE: 1.5, KZ: 0.85 }; // yurt dışı şube: pahalı ama oranla kazandırır
+  const wealthF = p => Math.pow(placeOf(p).w, 1.5) * (CMUL[ccOf(p)] || 1);
   const branchCost = (id, p, lv) => roundP(CHAINS[id].branch * wealthF(p) * Math.pow(2.2, lv)); // lv → lv+1
   const branchDaily = (s, id, p, lv) => lv ? roundP(CHAINS[id].branch * wealthF(p) / CH_PAYBACK * Math.pow(1.9, lv - 1) * (id === 'akaryakit' ? (s.fuelF || 1) : 1)) : 0;
-  const openPlaces = s => { const w = W(s, 'TR'); return Object.keys(E.CITIES.TR).filter(p => E.placeOpen(s, 'TR', p)); };
+  const openPlaces = (s, cc = 'TR') => s.countries[cc] ? Object.keys(E.CITIES[cc]).filter(p => E.placeOpen(s, cc, p)) : [];
   function chainOpen(s, id) {
     const c = CHAINS[id], x = ch(s, id); if (x.brand || !c.brand) { x.brand = true; return { ok: true }; }
     if (E.officeLv(s) < c.office) return { ok: false, msg: `${c.short} için ofisin en az ${E.OFFICES[c.office - 1].name} olmalı.` };
@@ -2635,14 +2680,14 @@ const P5 = (() => {
     tr.cash -= c.brand; x.brand = true; addLog(s, `${c.name} kuruldu.`, 'good'); return { ok: true };
   }
   function branchUp(s, id, p) {
-    const c = CHAINS[id], x = ch(s, id);
+    const c = CHAINS[id], x = ch(s, id), cc = ccOf(p);
     if (E.officeLv(s) < c.office) return { ok: false, msg: `${c.short} için ofisin en az ${E.OFFICES[c.office - 1].name} olmalı.` };
     if (!x.brand && c.brand) return { ok: false, msg: 'Önce markanı kur.' };
-    if (!E.placeOpen(s, 'TR', p)) return { ok: false, msg: 'Önce bu ilçeyi aç.' };
+    if (!E.placeOpen(s, cc, p)) return { ok: false, msg: `Önce bu ${cc === 'TR' ? 'ilçeyi' : 'semti'} aç.` };
     const lv = x.br[p] || 0; if (lv >= CH_MAX) return { ok: false, msg: 'Şube en üst seviyede.' };
-    const cost = branchCost(id, p, lv), tr = W(s, 'TR'); if (tr.cash < cost) return { ok: false, msg: `Türkiye kasasında ${fmt(cost, 'TR')} olmalı.` };
-    tr.cash -= cost; x.brand = true; x.br[p] = lv + 1;
-    addLog(s, `${c.short}: ${E.CITIES.TR[p].name} şubesi ${lv ? `seviye ${lv + 1} oldu` : 'açıldı'}.`, 'good');
+    const cost = E.fromTRY(s, cc, branchCost(id, p, lv)), w = W(s, cc); if (w.cash < cost) return { ok: false, msg: `${COUNTRIES[cc].name} kasasında ${fmt(cost, cc)} olmalı.` };
+    w.cash -= cost; x.brand = true; x.br[p] = lv + 1;
+    addLog(s, `${c.short}: ${placeOf(p).name}${cc === 'TR' ? '' : ' (' + COUNTRIES[cc].name + ')'} şubesi ${lv ? `seviye ${lv + 1} oldu` : 'açıldı'}.`, 'good');
     return { ok: true, lv: lv + 1 };
   }
   // ---- zincir geliştirmeleri: her biri 3 seviye, tüm şubelerin gelirini artırır ----
@@ -2669,19 +2714,21 @@ const P5 = (() => {
   const chainDaily = (s, id) => rz(chainBase(s, id) * upMul(s, id) * E.BONUS.income(s, 'chain'));
   const chainsDaily = s => Object.keys(CHAINS).reduce((a, id) => a + chainDaily(s, id), 0);
   // sinerji: şubesi olan ildeki galerilerde indirim (UI ve motor için)
-  const ilOfPlace = p => (E.CITIES.TR[p] || {}).il;
+  const ilOfPlace = p => placeOf(p).il;
   function hasChainInIl(s, id, il) { return Object.keys(ch(s, id).br).some(p => ilOfPlace(p) === il); }
   E.COST_HOOKS.push((s, kind, car) => {
-    if (!car || car.cc !== 'TR' || !s.chains) return 1;
-    const g = E.galleryOf(W(s, 'TR'), car.gid), il = g && ilOfPlace(g.city); if (!il) return 1;
+    if (!car || !s.chains || !s.countries[car.cc || 'TR']) return 1;
+    const g = E.galleryOf(W(s, car.cc || 'TR'), car.gid), il = g && ilOfPlace(g.city); if (!il) return 1;
     if (kind === 'detail' && hasChainInIl(s, 'yikama', il)) return 0.5;
     if (kind === 'fix' && hasChainInIl(s, 'servis', il)) return 0.85;
     return 1;
   });
   function stepChains(s) {
     if (s.day % 30 === 1 || !s.fuelF) { s.fuelF = +(0.8 + Math.random() * 0.45).toFixed(2); }
-    const inc = chainsDaily(s); if (!inc) return;
-    W(s, 'TR').cash += inc; s.chainTotal = (s.chainTotal || 0) + inc;
+    let inc = 0;
+    for (const id of Object.keys(CHAINS)) { const x = (s.chains || {})[id]; if (!x) continue; const m = upMul(s, id) * E.BONUS.income(s, 'chain');
+      for (const [p, lv] of Object.entries(x.br)) { const v = branchDaily(s, id, p, lv) * m, cc = ccOf(p), w = s.countries[cc]; if (!w || !v) continue; w.cash += E.fromTRY(s, cc, v); inc += v; } }
+    if (!inc) return; inc = rz(inc); s.chainTotal = (s.chainTotal || 0) + inc;
     if (s.day % 7 === 0) addLog(s, `Zincirlerin bu haftaki geliri yaklaşık ${fmt(inc * 7, 'TR')}.`, 'info');
   }
 
@@ -2726,7 +2773,7 @@ const P5 = (() => {
   E.onDaily(s => { stepMgrs(s); stepFactories(s); stepChains(s); stepBrand(s); stepClub(s); stepLux(s); if (s.day % 7 === 0) backup(s, E.SAVE_KEY); });
 
   return { GUIDE, guide, STYLES, maxMgrs, mgrSalary, newMgrCands, init, hireMgr, fireMgr, assign, autoAssign, allGalleries, managed,
-    CLUBS, spCost, spBonus, SP_DAYS, SP_MAX, spActive, sponsor, clubPrice, squadCost, buyClub, upSquad, sellClub, clubWeekly, ownClubBonus, LUX, luxVal, buyLux, sellLux, luxCount, prestigeBonus, BRAND_COST, BRAND_OFFICE, SEGS, FAC, brandOf, foundBrand, devCost, devModel, upFactory, dealerCost, CH_UPS, UP_B, UP_MAX, chUps, upMul, upCost, chainUp, upDealer, demandAt, brandDay, EQUIP, hasEq, buyEquip, nEquip, CHAINS, CH_MAX, ch, branchCost, branchDaily, chainOpen, branchUp, chainDaily, chainsDaily, openPlaces, hasChainInIl, FACTORIES, F_MAX, F_STEP, fLevel, fCost, fWeekly, factoryDisc, buildFactory, sellFactories, weeklyFactory, backup, backups };
+    CLUBS, spCost, spBonus, SP_DAYS, SP_MAX, spActive, sponsor, clubPrice, squadCost, buyClub, upSquad, sellClub, clubWeekly, ownClubBonus, LUX, luxVal, buyLux, sellLux, luxCount, prestigeBonus, BRAND_COST, BRAND_OFFICE, SEGS, FAC, brandOf, foundBrand, devCost, devModel, upFactory, dealerCost, CH_UPS, UP_B, UP_MAX, chUps, upMul, upCost, chainUp, upDealer, demandAt, brandDay, EQUIP, hasEq, buyEquip, nEquip, CHAINS, CH_MAX, ch, branchCost, branchDaily, chainOpen, branchUp, chainDaily, chainsDaily, openPlaces, ccOf, CMUL, hasChainInIl, FACTORIES, F_MAX, F_STEP, fLevel, fCost, fWeekly, factoryDisc, buildFactory, sellFactories, weeklyFactory, backup, backups };
 })();
 if (typeof module !== 'undefined') module.exports = P5;
 
@@ -3495,7 +3542,7 @@ window.Splash = Splash;</script>
         </div></article>`;
     }).join('')}
       <button class="gcard newg" data-tab="iller"><div class="gbody"><b>+ Yeni galeri aç</b>
-        <span class="muted small">${cc() === 'TR' ? 'İl ve ilçe aç, açtığın ilçede galeri kur. Her ilçenin müşterisi ve kirası farklı.' : 'Şehir aç, orada galeri kur.'}</span></div></button></div>`;
+        <span class="muted small">${cc() === 'TR' ? 'İl ve ilçe aç, açtığın ilçede galeri kur. Her ilçenin müşterisi ve kirası farklı.' : 'Şehir aç, sonra semtlerini aç ve galeri kur. Her semtin müşterisi ve kirası farklı.'}</span></div></button></div>`;
   }
   let citySel = null, cityQ = '', brIl = '', ret = null;
   function citiesSub() {
@@ -3508,10 +3555,10 @@ window.Splash = Splash;</script>
     const nOpen = keys.filter(k => E.cityOpen(S, c, k)).length;
     const sel = CL[citySel], open = E.cityOpen(S, c, citySel);
     const places = sel.places.map(p => ({ p, x: E.cityOf(c, p) })).sort((a, b) => ((b.p === distSel) - (a.p === distSel)) || (E.placeOpen(S, c, b.p) - E.placeOpen(S, c, a.p)) || b.x.w - a.x.w);
-    const right = !open ? `<div class="clock2"><span>🔒</span><b>${esc(sel.name)} kilitli</b><small class="muted">${c === 'TR' ? `${sel.places.length} ilçe · ` : ''}${sel.tier === 1 ? 'büyükşehir' : sel.tier === 2 ? 'büyük il' : 'il'}</small>
+    const right = !open ? `<div class="clock2"><span>🔒</span><b>${esc(sel.name)} kilitli</b><small class="muted">${sel.places.length} ${c === 'TR' ? 'ilçe' : 'semt'} · ${sel.tier === 1 ? 'büyükşehir' : sel.tier === 2 ? 'büyük il' : 'il'}</small>
         <div class="row2"><button class="btn pri" data-ucity="${citySel}">Aç · ${MS(E.cityUnlockCash(S, c, citySel))}</button><button class="btn real" data-ucityr="${citySel}">${E.REAL_PRICE.city}</button></div>
-        <small class="muted">${c === 'TR' ? 'Şehri açınca ilçelerini tek tek açabilirsin.' : 'Şehri açınca orada galeri kurabilirsin.'}</small></div>`
-      : `${c === 'TR' && sel.places.some(p => !E.placeOpen(S, c, p)) ? (() => { const lk = sel.places.filter(p => !E.placeOpen(S, c, p)), tot = lk.reduce((a, p) => a + E.placeUnlockCash(S, c, p), 0); return `<button class="btn ${W0.cash >= Math.min(...lk.map(p => E.placeUnlockCash(S, c, p))) ? 'pri' : ''} wide" data-uall="${citySel}">Kalan ${lk.length} ilçeyi aç · ${MS(tot)}</button>`; })() : ''}<div class="places">${places.map(({ p, x }) => {
+        <small class="muted">Şehri açınca ${c === 'TR' ? 'ilçelerini' : 'semtlerini'} tek tek ya da toplu açabilirsin.</small></div>`
+      : `${sel.places.some(p => !E.placeOpen(S, c, p)) ? (() => { const lk = sel.places.filter(p => !E.placeOpen(S, c, p)), tot = lk.reduce((a, p) => a + E.placeUnlockCash(S, c, p), 0); return `<button class="btn ${W0.cash >= Math.min(...lk.map(p => E.placeUnlockCash(S, c, p))) ? 'pri' : ''} wide" data-uall="${citySel}">Kalan ${lk.length} ${c === 'TR' ? 'ilçeyi' : 'semti'} aç · ${MS(tot)}</button>`; })() : ''}<div class="places">${places.map(({ p, x }) => {
         const po = E.placeOpen(S, c, p), has = W0.galleries.some(g => g.city === p);
         const btn = has ? '<span class="st-b here">GALERİN VAR</span>' : po ? `<button class="btn pri sm2" data-newgal="${p}">Galeri aç · ${MS(E.newGalleryCost(S, c, p))}</button>` : `<button class="btn sm2" data-uplace="${p}">🔒 Aç · ${MS(E.placeUnlockCash(S, c, p))}</button>`;
         return `<div class="place ${po ? 'open' : ''} ${p === distSel ? 'hl' : ''}" data-dsel="${p}"><div><b>${esc(x.name)}</b><small>${esc(x.desc)} · kira ${MS(x.rent)}/hafta</small></div>${btn}</div>`;
@@ -3523,7 +3570,7 @@ window.Splash = Splash;</script>
       <section class="cdetail"><div class="row"><h2>${esc(sel.name)}</h2>${open ? '<span class="st-b open">AÇIK</span>' : ''}${ilBtn}</div>${right}</section></div>`;
     }
     return `<div class="cities"><aside class="clist2">${c === 'TR' ? `<input id="cityq" placeholder="İl ara" value="${esc(cityQ)}">` : ''}<small class="muted">${nOpen}/${keys.length} açık</small>
-        ${list.map(k => `<button class="citem ${k === citySel ? 'on' : ''} ${E.cityOpen(S, c, k) ? 'open' : ''}" data-csel="${k}"><span>${E.cityOpen(S, c, k) ? '' : '🔒 '}${esc(CL[k].name)}</span><small>${c === 'TR' ? CL[k].places.filter(p => E.placeOpen(S, c, p)).length + '/' + CL[k].places.length : ''}</small></button>`).join('')}</aside>
+        ${list.map(k => `<button class="citem ${k === citySel ? 'on' : ''} ${E.cityOpen(S, c, k) ? 'open' : ''}" data-csel="${k}"><span>${E.cityOpen(S, c, k) ? '' : '🔒 '}${esc(CL[k].name)}</span><small>${CL[k].places.filter(p => E.placeOpen(S, c, p)).length + '/' + CL[k].places.length}</small></button>`).join('')}</aside>
       <section class="cdetail"><div class="row"><h2>${esc(sel.name)}</h2>${open ? '<span class="st-b open">AÇIK</span>' : ''}</div>${right}</section></div>`;
   }
   let mapKeys = null;
@@ -3615,7 +3662,7 @@ window.Splash = Splash;</script>
             : `<div class="row2"><button class="btn pri" data-unlock="${c}">Aç · ${fmtS(K.unlockCost, 'TR')}</button><button class="btn real" data-unlockr="${c}">${E.REAL_PRICE.country}</button></div>`;
         return `<article class="country ${here ? 'here' : ''} ${x ? '' : 'locked'}">
           <div class="cskyline"></div>
-          <div class="ch">${flag(c, 44)}<div><b>${K.name}</b><small>${K.sym} ${K.cur} · ${K.capital} · ${Object.keys(CITIES[c]).length} ${c === 'TR' ? 'il/ilçe' : 'şehir'}</small></div></div>
+          <div class="ch">${flag(c, 44)}<div><b>${K.name}</b><small>${K.sym} ${K.cur} · ${K.capital} · ${Object.keys(E.CITYLIST[c]).length} ${c === 'TR' ? 'il' : 'şehir'}</small></div></div>
           <div class="crow">${status}${x ? `<b>Kasa ${MS(x.cash, c)}</b>` : `<small>${esc(K.note)}</small>`}</div>
           ${opp ? `<small class="opp">● ${x.customers.length ? x.customers.length + ' müşteri bekliyor' : 'Satılmayı bekleyen araç var'}</small>` : x ? `<small class="muted">${esc(K.note)}</small>` : ''}
           ${btn}</article>`;
@@ -3630,7 +3677,7 @@ window.Splash = Splash;</script>
     return `<div class="vh"><h1>Borsa</h1><div class="subtabs">${tabs.map(([id, l]) => `<button class="${isub === id ? 'on' : ''}" data-isub="${id}">${l}</button>`).join('')}</div></div>${investSub()}`;
   }
   function bankaView() { return `<div class="vh"><h1>Banka</h1><span class="muted">Krediler Türkiye kasasına yatar, taksitler oradan çekilir</span></div><section class="panel bank wideb">${bankHtml()}</section>`; }
-  function illerView() { return `<div class="vh">${ret ? '<button class="btn" data-ret>‹ Geri</button>' : ''}<h1>${cc() === 'TR' ? 'Türkiye haritası' : 'Şehirler · ' + COUNTRIES[cc()].name}</h1>${cc() === 'TR' ? `<div class="subtabs"><button class="${cityMode === 'harita' ? 'on' : ''}" data-cmode="harita">Harita</button><button class="${cityMode === 'liste' ? 'on' : ''}" data-cmode="liste">Liste</button></div>` : '<span class="muted">Şehir aç, orada galeri kur</span>'}</div>${citiesSub()}`; }
+  function illerView() { return `<div class="vh">${ret ? '<button class="btn" data-ret>‹ Geri</button>' : ''}<h1>${cc() === 'TR' ? 'Türkiye haritası' : 'Şehirler · ' + COUNTRIES[cc()].name}</h1>${cc() === 'TR' ? `<div class="subtabs"><button class="${cityMode === 'harita' ? 'on' : ''}" data-cmode="harita">Harita</button><button class="${cityMode === 'liste' ? 'on' : ''}" data-cmode="liste">Liste</button></div>` : '<span class="muted">Şehir aç, semtlerini aç, galeri kur</span>'}</div>${citiesSub()}`; }
   const SOON = {
     online: ['Online galeri', 'Diğer oyuncuların satışa çıkardığı araçları al, kendi araçlarını onlara sat. Fiyat tavanı piyasa değerinin +%25\'i.'],
     oihale: ['Online ihale', 'Gerçek oyuncularla canlı ihale. Odalar kasa ve kredi puanı şartıyla açılır.'],
@@ -3768,47 +3815,50 @@ window.Splash = Splash;</script>
     return `${xBtn}<div class="mcol econ-m"><div class="row"><div><small class="cap pos">HOLDİNG · EKONOMİ</small><h2>Ekonomi Merkezi</h2></div><div class="subtabs">${tabs.map(([id, l]) => `<button class="${esub === id ? 'on' : ''}" data-esub="${id}">${l}</button>`).join('')}</div></div>${body}</div>`;
   }
 
-  // ---------- toplu şube/bayi seçici (zincirler + marka bayileri) ----------
+  // ---------- toplu şube/bayi seçici (zincirler + marka bayileri; zincirler yurt dışında da) ----------
+  let brCC = 'TR';
   function brKind(kind) {
-    if (kind === 'dealer') { const b = R.brandOf(S); return { max: 3, lv: p => (b.dealers[p] || 0), cost: (p, lv) => R.dealerCost(p, lv), up: p => R.upDealer(S, p), info: (p, lv) => lv ? `Bayi seviye ${lv}` : 'Bayi yok', word: 'bayi' }; }
+    if (kind === 'dealer') { const b = R.brandOf(S); return { max: 3, lv: p => (b.dealers[p] || 0), cost: (p, lv) => R.dealerCost(p, lv), up: p => R.upDealer(S, p), info: (p, lv) => lv ? `Bayi seviye ${lv}` : 'Bayi yok', word: 'bayi', abroad: false }; }
     const id = kind.slice(3), x = R.ch(S, id), m = R.upMul(S, id);
-    return { max: R.CH_MAX, lv: p => (x.br[p] || 0), cost: (p, lv) => R.branchCost(id, p, lv), up: p => R.branchUp(S, id, p), info: (p, lv) => lv ? `Seviye ${lv} · günlük +${fmtS(R.branchDaily(S, id, p, lv) * m, 'TR')}` : `Şube açılırsa günlük +${fmtS(R.branchDaily(S, id, p, 1) * m, 'TR')}`, word: 'şube' };
+    return { max: R.CH_MAX, lv: p => (x.br[p] || 0), cost: (p, lv) => R.branchCost(id, p, lv), up: p => R.branchUp(S, id, p), info: (p, lv) => lv ? `Seviye ${lv} · günlük +${MS(E.fromTRY(S, R.ccOf(p), R.branchDaily(S, id, p, lv) * m), R.ccOf(p))}` : `Şube açılırsa günlük +${MS(E.fromTRY(S, R.ccOf(p), R.branchDaily(S, id, p, 1) * m), R.ccOf(p))}`, word: 'şube', abroad: true };
   }
-  function brScope() {
-    const CL = E.CITYLIST.TR;
-    if (brIl && CL[brIl] && E.cityOpen(S, 'TR', brIl)) return CL[brIl].places.slice();
-    brIl = brIl && CL[brIl] ? brIl : ''; return brIl ? [] : R.openPlaces(S);
+  function brScope(kind) {
+    if (!brKind(kind).abroad || !S.countries[brCC]) brCC = 'TR';
+    const CL = E.CITYLIST[brCC];
+    if (brIl && CL[brIl] && E.cityOpen(S, brCC, brIl)) return CL[brIl].places.slice();
+    brIl = ''; return R.openPlaces(S, brCC);
   }
+  // maliyetler o ülkenin para birimiyle
+  const brCost = (K, p) => { const lv = K.lv(p); return E.fromTRY(S, brCC, K.cost(p, lv)) + (E.placeOpen(S, brCC, p) ? 0 : E.placeUnlockCash(S, brCC, p)); };
   function brPlan(kind, mode) {
-    const K = brKind(kind), sc = brScope(), out = [];
-    for (const p of sc) { const lv = K.lv(p); if (mode === 'open' ? lv : !lv || lv >= K.max) continue;
-      out.push({ p, cost: K.cost(p, lv) + (E.placeOpen(S, 'TR', p) ? 0 : E.placeUnlockCash(S, 'TR', p)) }); }
+    const K = brKind(kind), sc = brScope(kind), out = [];
+    for (const p of sc) { const lv = K.lv(p); if (mode === 'open' ? lv : !lv || lv >= K.max) continue; out.push({ p, cost: brCost(K, p) }); }
     out.sort((a, b) => a.cost - b.cost);
-    let cash = E.W(S, 'TR').cash, n = 0, tot = 0, all = 0; for (const o of out) { all += o.cost; if (cash >= o.cost) { cash -= o.cost; n++; tot += o.cost; } }
-    return { list: out, n, tot, all };
+    let cash = E.W(S, brCC).cash, n = 0, tot = 0; for (const o of out) { if (cash >= o.cost) { cash -= o.cost; n++; tot += o.cost; } }
+    return { list: out, n, tot };
   }
   function brRun(kind, mode) {
-    const K = brKind(kind), pl = brPlan(kind, mode); let n = 0, tot = 0; const c0 = E.W(S, 'TR').cash;
-    for (const { p } of pl.list) { if (!E.placeOpen(S, 'TR', p)) { const u = E.unlockPlace(S, 'TR', p); if (!u.ok) continue; }
-      const r = K.up(p); if (r.ok) n++; }
-    tot = c0 - E.W(S, 'TR').cash;
-    return n ? { ok: true, n, tot } : { ok: false, msg: 'Kasada yeterli para yok.' };
+    const K = brKind(kind), pl = brPlan(kind, mode); let n = 0; const c0 = E.W(S, brCC).cash;
+    for (const { p } of pl.list) { if (!E.placeOpen(S, brCC, p)) { const u = E.unlockPlace(S, brCC, p); if (!u.ok) continue; } const r = K.up(p); if (r.ok) n++; }
+    return n ? { ok: true, n, tot: c0 - E.W(S, brCC).cash } : { ok: false, msg: 'Kasada yeterli para yok.' };
   }
   function brPicker(kind) {
-    const K = brKind(kind), CL = E.CITYLIST.TR, tr = E.W(S, 'TR').cash, sc = brScope();
-    const ils = Object.keys(CL).sort((a, b) => (E.cityOpen(S, 'TR', b) - E.cityOpen(S, 'TR', a)) || CL[a].name.localeCompare(CL[b].name, 'tr'));
+    const K = brKind(kind), sc = brScope(kind), CL = E.CITYLIST[brCC], tr = E.W(S, brCC).cash, dw = brCC === 'TR' ? 'ilçe' : 'semt';
+    const ccs = K.abroad ? Object.keys(S.countries) : ['TR'];
+    const ils = Object.keys(CL).sort((a, b) => (E.cityOpen(S, brCC, b) - E.cityOpen(S, brCC, a)) || CL[a].name.localeCompare(CL[b].name, 'tr'));
     const cnt = k => CL[k].places.filter(p => K.lv(p)).length;
-    const sel = `<select data-bril>${`<option value="">Açık tüm ilçeler (${R.openPlaces(S).length})</option>`}${ils.map(k => `<option value="${k}" ${k === brIl ? 'selected' : ''} ${E.cityOpen(S, 'TR', k) ? '' : 'disabled'}>${E.cityOpen(S, 'TR', k) ? '' : '🔒 '}${esc(CL[k].name)}${E.cityOpen(S, 'TR', k) ? ` · ${cnt(k)}/${CL[k].places.length}` : ''}</option>`).join('')}</select>`;
+    const ccSel = ccs.length > 1 ? `<div class="seg4 brcc">${ccs.map(c => `<button class="${c === brCC ? 'on' : ''}" data-brcc="${c}">${flag(c, 18)} ${COUNTRIES[c].name}</button>`).join('')}</div>` : '';
+    const sel = `<select data-bril><option value="">Açık tüm ${dw}ler (${R.openPlaces(S, brCC).length})</option>${ils.map(k => `<option value="${k}" ${k === brIl ? 'selected' : ''} ${E.cityOpen(S, brCC, k) ? '' : 'disabled'}>${E.cityOpen(S, brCC, k) ? '' : '🔒 '}${esc(CL[k].name)}${E.cityOpen(S, brCC, k) ? ` · ${cnt(k)}/${CL[k].places.length}` : ''}</option>`).join('')}</select>`;
     const po = brPlan(kind, 'open'), pu = brPlan(kind, 'up');
-    const bulk = `<div class="brbulk">${sel}
-      <button class="btn ${po.n ? 'pri' : ''}" data-brall="${kind}|open" ${po.n ? '' : 'disabled'}>${po.list.length ? `Hepsine ${K.word} aç · ${po.n}/${po.list.length} · ${MS(po.tot)}` : `Boş ilçe yok`}</button>
-      <button class="btn ${pu.n ? 'pri' : ''}" data-brall="${kind}|up" ${pu.n ? '' : 'disabled'}>${pu.list.length ? `Hepsini büyüt · ${pu.n}/${pu.list.length} · ${MS(pu.tot)}` : 'Büyütülecek yok'}</button></div>
-      <small class="muted">Toplu işlem en ucuzdan başlar, kasan yettiği kadarını yapar.${brIl ? ' Kilitli ilçeler otomatik açılır (ilçe bedeli dahil).' : ' Kilitli ilçeler için listeden bir il seç.'}</small>`;
-    const ps = sc.sort((a, b) => (K.lv(b) - K.lv(a)) || (E.placeOpen(S, 'TR', b) - E.placeOpen(S, 'TR', a)) || CITIES.TR[b].w - CITIES.TR[a].w);
-    const rows = ps.map(p => { const lv = K.lv(p), op = E.placeOpen(S, 'TR', p), cost = lv < K.max ? K.cost(p, lv) + (op ? 0 : E.placeUnlockCash(S, 'TR', p)) : 0, x = CITIES.TR[p];
+    const bulk = `${ccSel}<div class="brbulk">${sel}
+      <button class="btn ${po.n ? 'pri' : ''}" data-brall="${kind}|open" ${po.n ? '' : 'disabled'}>${po.list.length ? `Hepsine ${K.word} aç · ${po.n}/${po.list.length} · ${MS(po.tot, brCC)}` : `Boş ${dw} yok`}</button>
+      <button class="btn ${pu.n ? 'pri' : ''}" data-brall="${kind}|up" ${pu.n ? '' : 'disabled'}>${pu.list.length ? `Hepsini büyüt · ${pu.n}/${pu.list.length} · ${MS(pu.tot, brCC)}` : 'Büyütülecek yok'}</button></div>
+      <small class="muted">Toplu işlem en ucuzdan başlar, ${COUNTRIES[brCC].name} kasan yettiği kadarını yapar.${brIl ? ` Kilitli ${dw}ler otomatik açılır (bedeli dahil).` : ` Kilitli ${dw}ler için listeden bir ${brCC === 'TR' ? 'il' : 'şehir'} seç.`}</small>`;
+    const ps = sc.sort((a, b) => (K.lv(b) - K.lv(a)) || (E.placeOpen(S, brCC, b) - E.placeOpen(S, brCC, a)) || CITIES[brCC][b].w - CITIES[brCC][a].w);
+    const rows = ps.map(p => { const lv = K.lv(p), op = E.placeOpen(S, brCC, p), cost = lv < K.max ? brCost(K, p) : 0, x = CITIES[brCC][p];
       return `<div class="place ${lv ? 'open' : ''}"><div><b>${brIl ? '' : esc(x.il) + ' · '}${esc(x.name)}${op ? '' : ' <span class="muted">🔒</span>'}</b><small>${K.info(p, lv)}</small></div>
-        ${lv >= K.max ? '<span class="st-b here">EN ÜST</span>' : `<button class="btn sm2 ${tr >= cost ? 'pri' : ''}" data-br1="${kind}|${p}" ${tr >= cost ? '' : 'disabled'}>${lv ? 'Büyüt' : op ? `${K.word === 'bayi' ? 'Bayi' : 'Şube'} aç` : 'İlçe + ' + K.word} · ${MS(cost)}</button>`}</div>`; }).join('');
-    return `${bulk}<div class="brlist">${rows || '<p class="muted">Bu kapsamda ilçe yok.</p>'}</div>`;
+        ${lv >= K.max ? '<span class="st-b here">EN ÜST</span>' : `<button class="btn sm2 ${tr >= cost ? 'pri' : ''}" data-br1="${kind}|${p}" ${tr >= cost ? '' : 'disabled'}>${lv ? 'Büyüt' : op ? `${K.word === 'bayi' ? 'Bayi' : 'Şube'} aç` : `${dw === 'ilçe' ? 'İlçe' : 'Semt'} + ${K.word}`} · ${MS(cost, brCC)}</button>`}</div>`; }).join('');
+    return `${bulk}<div class="brlist">${rows || `<p class="muted">Bu kapsamda ${dw} yok.</p>`}</div>`;
   }
   function chainModal() {
     const id = modal.id, c = R.CHAINS[id], x = R.ch(S, id), tr = E.W(S, 'TR').cash, ct = modal.ct || 'sube', nb = Object.keys(x.br).length;
@@ -4267,11 +4317,12 @@ window.Splash = Splash;</script>
     on('[data-chain]', b => { modal = { type: 'chain', id: b.dataset.chain }; render(); });
     on('[data-chopen]', b => { const r = R.chainOpen(S, b.dataset.chopen); if (r.ok) modal = { type: 'chain', id: b.dataset.chopen }; after(r, r.ok ? `${R.CHAINS[b.dataset.chopen].name} kuruldu!` : null); });
     $$('[data-bril]').forEach(b => { b.onchange = () => { brIl = b.value; render(); }; });
-    on('[data-brall]', b => { const [k, m] = b.dataset.brall.split('|'); const r = brRun(k, m); after(r, r.ok ? `${r.n} ${k === 'dealer' ? 'bayi' : 'şube'} ${m === 'open' ? 'açıldı' : 'büyütüldü'} · ${MS(r.tot)}` : null); });
-    on('[data-br1]', b => { const [k, p] = b.dataset.br1.split('|'); const K = brKind(k); if (!E.placeOpen(S, 'TR', p)) { const u = E.unlockPlace(S, 'TR', p); if (!u.ok) return after(u); } const r = K.up(p); after(r, r.ok ? `${CITIES.TR[p].name}: ${K.word} seviye ${r.lv}` : null); });
+    on('[data-brall]', b => { const [k, m] = b.dataset.brall.split('|'); const r = brRun(k, m); after(r, r.ok ? `${r.n} ${k === 'dealer' ? 'bayi' : 'şube'} ${m === 'open' ? 'açıldı' : 'büyütüldü'} · ${MS(r.tot, brCC)}` : null); });
+    on('[data-br1]', b => { const [k, p] = b.dataset.br1.split('|'); const K = brKind(k); if (!E.placeOpen(S, brCC, p)) { const u = E.unlockPlace(S, brCC, p); if (!u.ok) return after(u); } const r = K.up(p); after(r, r.ok ? `${CITIES[brCC][p].name}: ${K.word} seviye ${r.lv}` : null); });
+    on('[data-brcc]', b => { brCC = b.dataset.brcc; brIl = ''; render(); });
     on('[data-chtab]', b => { modal.ct = b.dataset.chtab; render(); });
     on('[data-chup]', b => { const [id, k] = b.dataset.chup.split('|'); const r = R.chainUp(S, id, k); after(r, r.ok ? 'Geliştirme tamam!' : null); });
-    on('[data-gomap]', b => { const [t, id] = b.dataset.gomap.split('|'); ret = { tab, hsub, modal: t === 'chain' ? { type: 'chain', id, ct: 'sube' } : { type: 'brand' } }; if (brIl) citySel = brIl; tab = 'iller'; modal = null; render(); });
+    on('[data-gomap]', b => { const [t, id] = b.dataset.gomap.split('|'); ret = { tab, hsub, modal: t === 'chain' ? { type: 'chain', id, ct: 'sube' } : { type: 'brand' } }; if (brCC !== cc() && S.countries[brCC]) S.cur = brCC; if (brIl) citySel = brIl; tab = 'iller'; modal = null; render(); });
     on('[data-ret]', b => { const r = ret; ret = null; tab = r.tab; hsub = r.hsub; modal = r.modal; render(); });
     on('[data-uall]', b => { const ck = b.dataset.uall, c = cc(); let n = 0, t = 0; const ps = E.CITYLIST[c][ck].places.filter(p => !E.placeOpen(S, c, p)).sort((a, b2) => E.placeUnlockCash(S, c, a) - E.placeUnlockCash(S, c, b2));
       for (const p of ps) { const k = E.placeUnlockCash(S, c, p); const r = E.unlockPlace(S, c, p); if (!r.ok) break; n++; t += k; }
