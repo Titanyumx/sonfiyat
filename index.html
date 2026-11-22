@@ -487,6 +487,19 @@ button.gcard.newg{cursor:pointer;color:inherit;text-align:left}
   .home .big,.kp .big,.kasa-big{font-size:30px}
 }
 @media (max-width:820px) and (orientation:landscape){div.big{font-size:28px!important;white-space:nowrap}}
+/* mağaza turbo/anahtar: 3 kart tek sırada */
+.shoprow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:6px}
+.shoprow .tcardp{padding:12px 10px 10px;gap:4px}
+.shoprow .bolt{font-size:30px;line-height:1}.shoprow .x2{font-size:30px;line-height:1.1}
+/* ana ekran kısa ekranlarda: sahne ve şeritler sıkı */
+@media (max-height:520px){
+  .home .scene{max-height:120px}.home .gscene .scene{max-height:110px}
+  .evband.guide{padding:6px 12px}.gstep b{font-size:15px}.gstep small{font-size:12px}
+  .home .kp-stats b{font-size:16px}.home .panel{padding:8px 10px}
+  .tgrid{gap:5px}.tgrid .tcard{padding:5px 8px}.tgrid .tic{width:26px;height:26px}
+  .mapband{padding:6px 12px}.mapband b{font-size:15px}
+  .keyhead{padding:8px 12px}
+}
 </style></head>
 <body><div id="app"></div>
 <script>// Türkiye'nin 81 ili ve 973 ilçesi (2013 sonrası idari yapı)
@@ -3695,10 +3708,10 @@ window.P6 = P6;</script>
         <div class="cashgrid">${cash.map(([id, p]) => `<article class="pcard">${p.badge ? `<span class="pbadge">${p.badge}</span>` : ''}<span class="money">${'💵'.repeat(Math.min(4, 1 + cash.findIndex(x => x[0] === id) / 1.5 | 0))}</span><b>${p.label}</b><button class="btn pri" data-buy="${id}">${p.price}</button></article>`).join('')}</div></div>`;
     } else if (shopTab === 'turbo') {
       body = `<p class="muted"><b class="acc">TURBO</b> · Süre boyunca araç satış kârın 2 katı! Süre sadece oyun açıkken akar, süreler üst üste eklenir, bütün ülkelerde geçerli. Borsa, ödüller ve varlık satışları 2× olmaz.${Q.turboOn(S) ? ` <b class="pos">Kalan: ${mmss(S.turboMs)}</b>` : ''}</p>
-        <div class="tgrid">${items.map(([id, p], i) => `<article class="tcardp t${i}">${p.badge ? `<span class="pbadge">${p.badge}</span>` : ''}<span class="bolt">⚡</span><b class="x2">2×</b><b class="acc">${p.label.toLocaleUpperCase('tr')}</b><small>${p.sub}</small><button class="btn pri" data-buy="${id}">${p.price}</button></article>`).join('')}</div>`;
+        <div class="shoprow">${items.map(([id, p], i) => `<article class="tcardp t${i}">${p.badge ? `<span class="pbadge">${p.badge}</span>` : ''}<span class="bolt">⚡</span><b class="x2">2×</b><b class="acc">${p.label.toLocaleUpperCase('tr')}</b><small>${p.sub}</small><button class="btn pri" data-buy="${id}">${p.price}</button></article>`).join('')}</div>`;
     } else {
       body = `<div class="panel keyhead"><div><small class="cap">ANAHTAR</small><b>Bekleme sürelerini anında bitir</b><small class="muted">Tamir, temizlik ve nakliye: kalan gün başına ${Q.KEY_PER_DAY} anahtar · her 2 günde 1 anahtar kendiliğinden gelir · görev +2 · başarım +10</small></div><b class="acc big2">🔑 ${S.keys || 0}</b></div>
-        <div class="tgrid">${items.map(([id, p]) => `<article class="tcardp">${p.badge ? `<span class="pbadge">${p.badge}</span>` : ''}<span class="bolt">🔑</span><b class="x2">${p.amount}</b><small>anahtar</small><button class="btn pri" data-buy="${id}">${p.price}</button></article>`).join('')}</div>`;
+        <div class="shoprow">${items.map(([id, p]) => `<article class="tcardp">${p.badge ? `<span class="pbadge">${p.badge}</span>` : ''}<span class="bolt">🔑</span><b class="x2">${p.amount}</b><small>anahtar</small><button class="btn pri" data-buy="${id}">${p.price}</button></article>`).join('')}</div>`;
     }
     return `<div class="vh"><h1>Mağaza</h1><div class="subtabs">${tabs.map(([id, l]) => `<button class="${shopTab === id ? 'on' : ''}" data-shoptab="${id}">${l}</button>`).join('')}</div></div>${body}`;
   }
