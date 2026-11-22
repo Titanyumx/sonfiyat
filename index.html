@@ -560,6 +560,8 @@ button.gcard.newg{cursor:pointer;color:inherit;text-align:left}
 @keyframes stamp{0%{transform:rotate(-8deg) scale(2.4);opacity:0}18%{transform:rotate(-8deg) scale(1);opacity:1}80%{opacity:1}100%{transform:rotate(-8deg) scale(1.05);opacity:0}}
 .fx-burst{position:absolute}.fx-burst i{position:absolute;left:-14px;top:-14px;width:28px;height:28px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff1a8,#f5b301 60%,#b97f00);color:#7a5200;font-style:normal;font-weight:900;font-size:15px;display:grid;place-items:center;animation:coin 1.3s ease-out forwards}
 @keyframes coin{0%{transform:rotate(var(--a)) translateY(0) scale(.4);opacity:0}15%{opacity:1}100%{transform:rotate(var(--a)) translateY(calc(-1 * var(--d))) scale(1);opacity:0}}
+
+.fcard .fic svg{width:52px;height:46px;display:block}.fart.off,.chart2.off{filter:grayscale(.55) brightness(.85)}.chcard .chic svg{width:100%;height:100%;display:block;border-radius:8px}.chcard .chic{padding:0;overflow:hidden}
 </style></head>
 <body><div id="app"></div>
 <script>// Türkiye'nin 81 ili ve 973 ilçesi (2013 sonrası idari yapı)
@@ -3072,7 +3074,93 @@ window.Splash = Splash;</script>
     </svg>`;
   }
 
-  window.Art = { car, scene, face };
+
+  // ---------- ofis binaları (6 seviye) ----------
+  function winGrid(x, y, w, h, cw, ch, gx, gy, seed, lit, dark) {
+    let o = ''; const cols = Math.max(1, Math.floor((w + gx) / (cw + gx))), rows = Math.max(1, Math.floor((h + gy) / (ch + gy)));
+    const ox = x + (w - (cols * cw + (cols - 1) * gx)) / 2;
+    for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) o += `<rect x="${(ox + c * (cw + gx)).toFixed(1)}" y="${(y + r * (ch + gy)).toFixed(1)}" width="${cw}" height="${ch}" fill="${(r * 7 + c * 3 + seed) % 5 ? lit : dark}"/>`;
+    return o;
+  }
+  function office(lv) {
+    const B = 150; let b = '';
+    if (lv === 1) { // konteyner
+      b = `<rect x="104" y="${B - 40}" width="92" height="40" fill="#c8662e"/>${Array.from({ length: 11 }, (_, i) => `<path d="M${109 + i * 8} ${B - 38} V${B - 2}" stroke="#a24f1f" stroke-width="2"/>`).join('')}
+        <rect x="102" y="${B - 43}" width="96" height="4" fill="#8e431a"/><rect x="118" y="${B - 30}" width="26" height="14" fill="#f5c95a" stroke="#5a2a10" stroke-width="2"/><path d="M131 ${B - 30} V${B - 16}" stroke="#5a2a10"/>
+        <rect x="158" y="${B - 34}" width="18" height="34" fill="#5a2a10"/><rect x="180" y="${B - 36}" width="14" height="10" fill="#d8dde4"/><path d="M182 ${B - 33} h10 M182 ${B - 30} h10" stroke="#8a96a8"/>
+        <path d="M150 ${B} h30 l-6 -6 h-24 z" fill="#6b7280"/><rect x="108" y="${B - 54}" width="40" height="10" rx="2" fill="#1d2340" stroke="#f5c95a"/><text x="128" y="${B - 46.5}" font-size="6.5" text-anchor="middle" fill="#f5c95a" font-weight="800">OFİS</text>`;
+    } else if (lv === 2) { // prefabrik
+      b = `<path d="M86 ${B - 50} L150 ${B - 74} L214 ${B - 50} Z" fill="#9b3d36"/><rect x="92" y="${B - 50}" width="116" height="50" fill="#e6e2d3"/>${Array.from({ length: 7 }, (_, i) => `<path d="M${92 + i * 16.6} ${B - 50} V${B}" stroke="#c9c3ae"/>`).join('')}
+        ${[100, 128, 170].map(x => `<rect x="${x}" y="${B - 38}" width="22" height="16" fill="#f5c95a" stroke="#6b6553" stroke-width="2"/>`).join('')}<rect x="150" y="${B - 34}" width="14" height="34" fill="#5b6f8a"/>
+        <rect x="144" y="${B - 4}" width="26" height="4" fill="#8a8f9a"/><rect x="102" y="${B - 62}" width="96" height="10" fill="#1d2340"/><text x="150" y="${B - 54.5}" font-size="7" text-anchor="middle" fill="#f5c95a" font-weight="800" letter-spacing="1">GALERİ OFİSİ</text>`;
+    } else if (lv === 3) { // cadde binası
+      b = `<rect x="96" y="${B - 96}" width="108" height="96" fill="#b8835a"/><rect x="92" y="${B - 100}" width="116" height="6" fill="#8c5f3d"/>${[0, 1, 2].map(r => `<rect x="96" y="${B - 64 + r * 0}" width="108" height="2" fill="#8c5f3d" opacity="0"/>`).join('')}
+        ${winGrid(104, B - 90, 92, 50, 16, 18, 8, 10, 1, '#f5c95a', '#4a5870')}<path d="M96 ${B - 34} H204" stroke="#8c5f3d" stroke-width="3"/>
+        <rect x="100" y="${B - 30}" width="100" height="30" fill="#1e2a3e"/><rect x="104" y="${B - 26}" width="62" height="22" fill="#7fb0d8" opacity=".55"/><rect x="172" y="${B - 26}" width="24" height="26" fill="#3a4a63"/>
+        <path d="M98 ${B - 32} h104 l-6 -8 h-92 z" fill="#c23d3d"/><text x="150" y="${B - 34.5}" font-size="6.5" text-anchor="middle" fill="#fff" font-weight="800">OTO GALERİ</text>`;
+    } else if (lv === 4) { // plaza
+      b = `<rect x="110" y="${B - 124}" width="80" height="124" fill="#2c4f70"/><path d="M110 ${B - 124} L190 ${B - 124} L190 ${B} L110 ${B}Z" fill="url(#oglass)"/>
+        ${winGrid(114, B - 118, 72, 92, 10, 6, 3, 3, 2, '#9fd0f0', '#28415a')}<path d="M150 ${B - 124} V${B}" stroke="#1a3048" stroke-width="2"/>
+        <rect x="104" y="${B - 128}" width="92" height="5" fill="#cbd5e1"/><rect x="104" y="${B - 22}" width="92" height="22" fill="#1d2c40"/><rect x="134" y="${B - 18}" width="32" height="18" fill="#7fb0d8" opacity=".7"/>
+        <text x="150" y="${B - 133}" font-size="8" text-anchor="middle" fill="#f5c95a" font-weight="800" letter-spacing="2">PLAZA</text>`;
+    } else if (lv === 5) { // kurumsal ikiz kuleler
+      const tw = (x, h, sd) => `<rect x="${x}" y="${B - h}" width="50" height="${h}" fill="#26324a"/><rect x="${x}" y="${B - h}" width="50" height="${h}" fill="url(#oglass)"/>${winGrid(x + 4, B - h + 6, 42, h - 30, 8, 5, 3, 3, sd, '#f5c95a', '#33425c')}<rect x="${x - 3}" y="${B - h - 4}" width="56" height="5" fill="#94a3b8"/>`;
+      b = tw(92, 128, 1) + tw(158, 140, 3) + `<rect x="142" y="${B - 82}" width="16" height="8" fill="#94a3b8"/><rect x="86" y="${B - 20}" width="128" height="20" fill="#1a2436"/><rect x="128" y="${B - 16}" width="44" height="16" fill="#7fb0d8" opacity=".7"/>
+        <rect x="100" y="${B - 31}" width="100" height="11" rx="2" fill="#0f1626" stroke="#f5c95a" stroke-width=".8"/><text x="150" y="${B - 23}" font-size="7" text-anchor="middle" fill="#f5c95a" font-weight="800" letter-spacing="1.5">GENEL MÜDÜRLÜK</text>`;
+    } else { // holding gökdelen
+      b = `<path d="M118 ${B} V${B - 132} L150 ${B - 150} L182 ${B - 132} V${B} Z" fill="#1b2438"/><path d="M118 ${B} V${B - 132} L150 ${B - 150} L182 ${B - 132} V${B} Z" fill="url(#oglass)"/>
+        ${winGrid(123, B - 128, 54, 104, 6, 4, 2.5, 3, 4, '#f5c95a', '#2d3a55')}<path d="M150 ${B - 150} V${B - 168}" stroke="#d8dde4" stroke-width="2"/><circle cx="150" cy="${B - 168}" r="2.5" fill="#ff4d4d"><animate attributeName="opacity" values="1;.2;1" dur="1.4s" repeatCount="indefinite"/></circle>
+        <circle cx="150" cy="${B - 112}" r="9" fill="#0f1626" stroke="#f5c95a" stroke-width="1.5"/><text x="150" y="${B - 109}" font-size="8" text-anchor="middle" fill="#f5c95a" font-weight="900">SF</text>
+        <path d="M100 ${B} V${B - 64} H118 M182 ${B - 64} H200 V${B}" fill="#243049"/><rect x="100" y="${B - 64}" width="18" height="64" fill="#243049"/><rect x="182" y="${B - 64}" width="18" height="64" fill="#243049"/>
+        ${winGrid(103, B - 58, 12, 50, 4, 4, 2, 3, 2, '#f5c95a', '#33425c')}${winGrid(185, B - 58, 12, 50, 4, 4, 2, 3, 5, '#f5c95a', '#33425c')}
+        <rect x="96" y="${B - 18}" width="108" height="18" fill="#141c2c"/><rect x="132" y="${B - 14}" width="36" height="14" fill="#7fb0d8" opacity=".7"/><rect x="114" y="${B - 30}" width="72" height="11" rx="2" fill="#0f1626" stroke="#f5c95a" stroke-width=".8"/><text x="150" y="${B - 22}" font-size="7" text-anchor="middle" fill="#f5c95a" font-weight="900" letter-spacing="3">HOLDİNG</text>`;
+    }
+    const city = [[6, 54, 2], [36, 78, 4], [64, 42, 1], [226, 66, 3], [252, 50, 2], [276, 84, 5]].map(([x, h, sd]) => `<rect x="${x}" y="${B - h}" width="24" height="${h}" fill="#1a2234"/>${winGrid(x + 3, B - h + 5, 18, h - 10, 3, 3, 3, 5, sd, '#3d4a66', '#1a2234')}`).join('');
+    const trees = lv >= 2 ? [70, 230].map(x => `<rect x="${x - 1.5}" y="${B - 14}" width="3" height="14" fill="#5b3a1f"/><circle cx="${x}" cy="${B - 18}" r="8" fill="#2f6b3f"/>`).join('') : '';
+    const cars = lv >= 3 ? `<g><rect x="-40" y="${B + 4}" width="26" height="8" rx="3" fill="#e0a92e"/><animateTransform attributeName="transform" type="translate" from="0 0" to="360 0" dur="7s" repeatCount="indefinite"/></g>` : '';
+    const stars = Array.from({ length: 14 }, (_, i) => `<circle cx="${(i * 53) % 300}" cy="${(i * 29) % 60 + 6}" r="${i % 3 ? .7 : 1.1}" fill="#fff" opacity=".7"/>`).join('');
+    return `<svg viewBox="0 0 300 172" class="offart" preserveAspectRatio="xMidYMax slice"><defs><linearGradient id="osky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#151a33"/><stop offset=".7" stop-color="#4a3a63"/><stop offset="1" stop-color="#b8664e"/></linearGradient>
+      <linearGradient id="oglass" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".18"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".2"/></linearGradient></defs>
+      <rect width="300" height="172" fill="url(#osky)"/>${stars}<circle cx="262" cy="26" r="9" fill="#f4ead0" opacity=".85"/>${city}
+      <rect y="${B}" width="300" height="22" fill="#2b313c"/><rect y="${B}" width="300" height="3" fill="#4a5262"/><path d="M0 ${B + 13} H300" stroke="#8a8f9a" stroke-dasharray="10 8"/>${trees}<g transform="translate(150 ${B}) scale(${[1, 1, 1, .9, .82, .78][lv - 1]}) translate(-150 -${B})">${b}</g>${cars}</svg>`;
+  }
+
+  // ---------- fabrika kartı ----------
+  const FCOL = { parca: '#8a96a8', lastik: '#3a3f4a', boya: '#c23d3d', aku: '#3ccf7a', cam: '#f5c95a', doseme: '#8b5e3c', yag: '#d08a2e', jant: '#6aa8e0' };
+  function factory(id, lv) {
+    const c = FCOL[id] || '#8a96a8', off = !lv, k = Math.max(1, lv);
+    const glyph = {
+      parca: `<circle cx="44" cy="20" r="6" fill="none" stroke="${c}" stroke-width="3" stroke-dasharray="3 2"/><circle cx="44" cy="20" r="2" fill="${c}"/>`,
+      lastik: `<circle cx="44" cy="20" r="7" fill="#222"/><circle cx="44" cy="20" r="3" fill="#9aa3b0"/>`,
+      boya: `<path d="M38 26 l6 -12 l6 12 z" fill="${c}"/><rect x="42" y="12" width="4" height="4" fill="#ddd"/>`,
+      aku: `<rect x="37" y="15" width="14" height="10" rx="1" fill="#2b2f38" stroke="${c}" stroke-width="1.5"/><path d="M40 15 v-2 M48 15 v-2" stroke="${c}" stroke-width="2"/>`,
+      cam: `<circle cx="44" cy="20" r="6" fill="${c}"/><path d="M44 10 v-3 M52 20 h3 M36 20 h-3" stroke="${c}" stroke-width="1.5"/>`,
+      doseme: `<path d="M39 12 h8 v8 h4 v6 h-12 z" fill="${c}"/>`,
+      yag: `<path d="M44 12 c-5 7 -6 9 -6 11 a6 6 0 0 0 12 0 c0 -2 -1 -4 -6 -11z" fill="${c}"/>`,
+      jant: `<circle cx="44" cy="20" r="7" fill="none" stroke="${c}" stroke-width="2"/>${[0, 72, 144, 216, 288].map(a => `<path d="M44 20 L${(44 + 7 * Math.cos(a * Math.PI / 180)).toFixed(1)} ${(20 + 7 * Math.sin(a * Math.PI / 180)).toFixed(1)}" stroke="${c}" stroke-width="1.5"/>`).join('')}`,
+    }[id] || '';
+    const chim = Array.from({ length: Math.min(3, Math.ceil(k / 2)) }, (_, i) => { const x = 8 + i * 9; return `<rect x="${x}" y="8" width="5" height="18" fill="#5b6475"/>${off ? '' : `<circle cx="${x + 2.5}" cy="6" r="3" fill="#c9ced8" opacity=".7"><animate attributeName="cy" values="7;-4" dur="${2 + i * .4}s" repeatCount="indefinite"/><animate attributeName="opacity" values=".7;0" dur="${2 + i * .4}s" repeatCount="indefinite"/></circle>`}`; }).join('');
+    return `<svg viewBox="0 0 60 52" class="fart ${off ? 'off' : ''}">${chim}
+      <path d="M2 50 V30 l9 -6 v6 l9 -6 v6 l9 -6 v6 l9 -6 V50 z" fill="${off ? '#4a5262' : '#6b7a92'}"/><path d="M2 30 l9 -6 v6 l9 -6 v6 l9 -6 v6 l9 -6" fill="none" stroke="#9fd0f0" stroke-width="1.2" opacity="${off ? .3 : .8}"/>
+      <rect x="8" y="38" width="10" height="12" fill="#2b313c"/><rect x="22" y="36" width="12" height="5" fill="${off ? '#3a4150' : '#f5c95a'}" opacity=".85"/>
+      <rect x="32" y="6" width="24" height="28" rx="4" fill="#1d2340" stroke="${c}" stroke-width="1.5"/>${glyph}
+      <rect x="0" y="50" width="60" height="2" fill="#2b313c"/></svg>`;
+  }
+
+  // ---------- zincir şubesi ----------
+  function chainShop(kind, built) {
+    const S = {
+      otopark: ['#2f6fdb', `<rect x="8" y="14" width="44" height="34" fill="#5b6475"/>${[0, 1, 2].map(r => `<rect x="8" y="${17 + r * 11}" width="44" height="2" fill="#3a4150"/>${[0, 1, 2].map(c => `<rect x="${12 + c * 13}" y="${20 + r * 11}" width="9" height="5" rx="1.5" fill="${['#c23d3d', '#e0a92e', '#6aa8e0', '#e6e2d3'][(r + c) % 4]}"/>`).join('')}`).join('')}<rect x="20" y="4" width="20" height="12" rx="2" fill="#2f6fdb"/><text x="30" y="13.5" font-size="10" text-anchor="middle" fill="#fff" font-weight="900">P</text>`],
+      yikama: ['#3cb4e0', `<rect x="6" y="18" width="48" height="30" fill="#e6e2d3"/><path d="M14 48 V26 a16 10 0 0 1 32 0 V48" fill="#2b313c"/>${[[20, 30], [30, 26], [40, 31], [25, 38], [36, 37]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="3" fill="#cfefff" opacity=".9"/>`).join('')}<rect x="6" y="8" width="48" height="10" fill="#3cb4e0"/><text x="30" y="15.5" font-size="6.5" text-anchor="middle" fill="#fff" font-weight="900">YIKAMA</text>`],
+      servis: ['#e0a92e', `<rect x="6" y="18" width="48" height="30" fill="#5b6475"/><rect x="12" y="26" width="16" height="22" fill="#2b313c"/>${[0, 1, 2, 3].map(i => `<path d="M12 ${28 + i * 5} h16" stroke="#3a4150"/>`).join('')}<rect x="32" y="26" width="16" height="22" fill="#f5c95a" opacity=".85"/><path d="M36 40 l8 -8 m-2 0 l3 3" stroke="#2b313c" stroke-width="2"/><rect x="6" y="8" width="48" height="10" fill="#e0a92e"/><text x="30" y="15.5" font-size="6.5" text-anchor="middle" fill="#1d2340" font-weight="900">SERVİS</text>`],
+      kiralama: ['#3ccf7a', `<rect x="6" y="18" width="48" height="30" fill="#e6e2d3"/><rect x="10" y="24" width="40" height="18" fill="#7fb0d8" opacity=".6"/><rect x="16" y="33" width="22" height="7" rx="3" fill="#c23d3d"/><circle cx="21" cy="40" r="2" fill="#222"/><circle cx="33" cy="40" r="2" fill="#222"/><rect x="6" y="8" width="48" height="10" fill="#3ccf7a"/><text x="30" y="15.5" font-size="6" text-anchor="middle" fill="#0f2a1a" font-weight="900">RENT A CAR</text>`],
+      akaryakit: ['#c23d3d', `<rect x="4" y="12" width="52" height="5" fill="#c23d3d"/><rect x="8" y="17" width="3" height="31" fill="#cbd5e1"/><rect x="49" y="17" width="3" height="31" fill="#cbd5e1"/>${[18, 34].map(x => `<rect x="${x}" y="28" width="8" height="20" rx="1" fill="#e6e2d3"/><rect x="${x + 1.5}" y="31" width="5" height="4" fill="#2b313c"/>`).join('')}<rect x="42" y="2" width="12" height="9" fill="#1d2340" stroke="#c23d3d"/><text x="48" y="8.5" font-size="5" text-anchor="middle" fill="#f5c95a" font-weight="800">₺</text>`],
+      marka: ['#e0a92e', `<path d="M4 48 V26 l10 -7 v7 l10 -7 v7 l10 -7 v7 l10 -7 V48z" fill="#6b7a92"/><rect x="48" y="6" width="6" height="42" fill="#5b6475"/><rect x="10" y="34" width="40" height="14" fill="#1d2340"/><rect x="14" y="38" width="18" height="6" rx="2.5" fill="#e0a92e"/><circle cx="18" cy="44" r="1.8" fill="#111"/><circle cx="28" cy="44" r="1.8" fill="#111"/>`],
+    }[kind] || ['#888', ''];
+    return `<svg viewBox="0 0 60 52" class="chart2 ${built ? '' : 'off'}"><rect width="60" height="52" rx="8" fill="#151b2b"/>${S[1]}<rect y="48" width="60" height="4" fill="#2b313c"/></svg>`;
+  }
+
+  window.Art = { car, scene, face, office, factory, chainShop };
 })();
 </script>
 <script>// Son Fiyat? – arayüz (yatay, 2. aşama)
@@ -3529,17 +3617,7 @@ window.Splash = Splash;</script>
   function soonView() { const [n, d] = SOON[tab]; return `<div class="vh"><h1>${n}</h1></div><div class="empty big-empty"><b>Yakında</b><span>${d}</span><span class="muted small">Online özellikler sunucu kurulunca açılacak.</span></div>`; }
 
   // ---------- yatırımlar (holding: ofisim) ----------
-  function officeArt(lv) {
-    const hs = [26, 40, 58, 80, 104, 132], h = hs[lv - 1], wd = [70, 80, 90, 80, 76, 70][lv - 1], x = 150 - wd / 2, base = 150;
-    let win = ''; const rows = Math.floor((h - 14) / 12), cols = Math.max(2, Math.floor((wd - 10) / 14));
-    for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) win += `<rect x="${x + 7 + c * ((wd - 14) / cols)}" y="${base - h + 8 + r * 12}" width="${(wd - 14) / cols - 4}" height="7" fill="${(r * 7 + c * 3) % 5 ? '#f5c95a' : '#4a5870'}" opacity=".9"/>`;
-    const city = [[10, 50], [44, 70], [78, 38], [212, 60], [244, 44], [270, 76]].map(([bx, bh]) => `<rect x="${bx}" y="${base - bh}" width="28" height="${bh}" fill="#1c2638"/>`).join('');
-    return `<svg viewBox="0 0 300 172" class="offart"><defs><linearGradient id="osky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1d2340"/><stop offset="1" stop-color="#6b4e6e"/></linearGradient></defs>
-      <rect width="300" height="172" fill="url(#osky)"/>${city}
-      <rect x="${x}" y="${base - h}" width="${wd}" height="${h}" fill="${lv >= 5 ? '#26324a' : lv >= 3 ? '#3a4a63' : '#8a8f7c'}"/>${win}
-      ${lv >= 6 ? `<path d="M${x + wd / 2 - 3} ${base - h} V${base - h - 18}" stroke="#ccc" stroke-width="2"/><text x="150" y="${base - 6}" text-anchor="middle" font-size="7" fill="#f5c95a" font-weight="700" letter-spacing="2">HOLDİNG</text>` : ''}
-      <rect y="${base}" width="300" height="22" fill="#2b313c"/><path d="M0 ${base + 11} H300" stroke="#8a8f9a" stroke-dasharray="10 8"/></svg>`;
-  }
+  function officeArt(lv) { return Art.office(lv); }
   function holdingView() {
     const tabs = [['ofis', 'Ofis'], ['atolye', 'Atölye'], ['yatirim', 'Yatırımlar'], ['sponsor', 'Sponsor'], ['luks', 'Lüks'], ['kulup', 'Kulüp'], ['ilan', 'İlan sitesi'], ['arkadas', 'Arkadaş']];
     const head = `<div class="vh"><h1>Ofisim</h1><div class="subtabs">${tabs.map(([id, l]) => `<button class="${hsub === id ? 'on' : ''}" data-hsub="${id}">${l}</button>`).join('')}</div></div>`;
@@ -3599,19 +3677,19 @@ window.Splash = Splash;</script>
       <section class="panel fhead"><div><b>Tedarik fabrikaların tamir ve temizlik maliyetini düşürür</b><small class="pos">İndirim −%${(disc * 100).toFixed(1).replace('.', ',')} (en fazla %20) · haftalık +${fmtS(R.weeklyFactory(S), 'TR')}</small></div>
         <button class="btn" data-fsell ${n ? '' : 'disabled'}>İşletme sat</button><div class="fprog"><i class="tbar"><u style="width:${n / 8 * 100}%"></u></i><small>${n}/8 fabrika · satarsan yatırımın %70'i döner</small></div></section>
       <div class="fgrid">${Object.entries(F).map(([id, x]) => { const lv = R.fLevel(S, id), cost = lv < R.F_MAX ? R.fCost(id, lv) : 0;
-        return `<article class="fcard ${lv ? 'on' : ''}"><span class="fic">${x.icon}</span><div><b>${x.name}</b><span class="pips">${Array.from({ length: R.F_MAX }, (_, i) => `<i class="${i < lv ? 'on' : ''}"></i>`).join('')}</span>
+        return `<article class="fcard ${lv ? 'on' : ''}"><span class="fic">${Art.factory(id, lv)}</span><div><b>${x.name}</b><span class="pips">${Array.from({ length: R.F_MAX }, (_, i) => `<i class="${i < lv ? 'on' : ''}"></i>`).join('')}</span>
           <small class="pos">${lv ? `Seviye ${lv} · −%${(lv * R.F_STEP * 100).toFixed(1).replace('.', ',')} masraf` : 'Kurulmadı'}</small><small class="acc">${lv ? `Haftalık +${fmtS(R.fWeekly(S, id), 'TR')}` : ''}</small></div>
           ${lv >= R.F_MAX ? '<button class="btn wide" disabled>MAKSİMUM SEVİYE</button>' : `<button class="btn ${tr >= cost ? 'pri' : ''} wide" data-fbuild="${id}" ${tr >= cost ? '' : 'disabled'}>${lv ? 'Geliştir' : 'Kur'} · ${fmtS(cost, 'TR')}</button>`}</article>`; }).join('')}</div>
       ${brandCard()}
       <section class="panel chhead"><b>Zincirler</b><small class="pos">Günlük toplam +${fmtS(R.chainsDaily(S), 'TR')}${(S.chainTotal || 0) ? ` · şimdiye kadar ${fmtS(S.chainTotal, 'TR')}` : ''}</small></section>
       <div class="chains">${Object.entries(R.CHAINS).map(([id, c]) => { const x = R.ch(S, id), n = Object.keys(x.br).length, lock = E.officeLv(S) < c.office;
-        return `<article class="chcard ${x.brand ? 'on' : ''}"><span class="chic">${c.icon}</span><div><small class="cap acc">${x.brand ? `${n} ŞUBE · GÜNLÜK +${fmtS(R.chainDaily(S, id), 'TR')}` : c.brand ? 'YENİ' : 'KURULUŞ BEDELİ YOK'}</small><b>${c.name}</b><small class="muted">${c.desc}${id === 'akaryakit' && x.brand ? ` Bu ay fiyat çarpanı ×${String(S.fuelF || 1).replace('.', ',')}.` : ''}</small></div>
+        return `<article class="chcard ${x.brand ? 'on' : ''}"><span class="chic">${Art.chainShop(id, !!x.brand)}</span><div><small class="cap acc">${x.brand ? `${n} ŞUBE · GÜNLÜK +${fmtS(R.chainDaily(S, id), 'TR')}` : c.brand ? 'YENİ' : 'KURULUŞ BEDELİ YOK'}</small><b>${c.name}</b><small class="muted">${c.desc}${id === 'akaryakit' && x.brand ? ` Bu ay fiyat çarpanı ×${String(S.fuelF || 1).replace('.', ',')}.` : ''}</small></div>
           ${lock ? `<button class="btn" disabled>Ofis ≥ ${E.OFFICES[c.office - 1].name}</button>` : x.brand || !c.brand ? `<button class="btn pri" data-chain="${id}">Şubeler →</button>` : `<button class="btn pri" data-chopen="${id}">Markanı kur · ${fmtS(c.brand, 'TR')}</button>`}</article>`; }).join('')}</div>
 `;
   }
   function brandCard() {
     const b = R.brandOf(S), lock = E.officeLv(S) < R.BRAND_OFFICE, d = b && R.brandDay(S);
-    return `<article class="chcard brandc ${b ? 'on' : ''}"><span class="chic">🏭</span><div><small class="cap acc">${b ? `${Object.keys(b.models).length} MODEL · ${Object.keys(b.dealers).length} BAYİ · GÜNLÜK +${fmtS(d.profit, 'TR')}` : 'OTOMOTİV'}</small>
+    return `<article class="chcard brandc ${b ? 'on' : ''}"><span class="chic">${Art.chainShop('marka', !!b)}</span><div><small class="cap acc">${b ? `${Object.keys(b.models).length} MODEL · ${Object.keys(b.dealers).length} BAYİ · GÜNLÜK +${fmtS(d.profit, 'TR')}` : 'OTOMOTİV'}</small>
         <b>${b ? esc(b.name) : 'Kendi otomobil markanı kur'}</b><small class="muted">${b ? `Fabrika günde ${d.cap} araç üretir · günde ~${d.units.toFixed(1).replace('.', ',')} araç satıyor · toplam kâr ${fmtS(b.total, 'TR')}` : 'Fabrikanı kur, modellerini üret, ilçelere bayi aç. Her gün satılan arabaların kârı kasana girer; zengin ilçelerde pahalı modeller daha çok satar.'}</small></div>
       ${b ? '<button class="btn pri" data-brand>Yönet →</button>' : lock ? `<button class="btn" disabled>Ofis ≥ ${E.OFFICES[R.BRAND_OFFICE - 1].name}</button>` : `<button class="btn pri" data-brand>Kur · ${fmtS(R.BRAND_COST, 'TR')}</button>`}</article>`;
   }
