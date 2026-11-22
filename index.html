@@ -529,6 +529,24 @@ button.gcard.newg{cursor:pointer;color:inherit;text-align:left}
   .bankR .banks{flex-direction:row;gap:5px}.bankR .bankc{flex:1;min-width:0}.bankR .bankc b{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .bankR{gap:5px}.bankR .loanq .kv b{white-space:nowrap}
 }
+/* açılış ekranı */
+.splash{position:fixed;inset:0;z-index:100;background:#0b111a;overflow:hidden;transition:opacity .45s}.splash.out{opacity:0;pointer-events:none}
+.sp-scene{position:absolute;inset:0;width:100%;height:100%}
+.sp-dim{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 45%,#0b111acc 0,#0b111a99 45%,#0b111a55 100%)}
+.sp-drive{animation:spdrive 7s linear infinite}@keyframes spdrive{from{transform:translate(-260px,612px)}to{transform:translate(1700px,612px)}}
+.sp-mid{position:absolute;left:50%;top:50%;transform:translate(-50%,-52%);width:min(560px,86vw);display:flex;flex-direction:column;align-items:center;text-align:center}
+.sp-icon{width:112px;height:112px;border-radius:26px;background:linear-gradient(160deg,#2a4766,#13202e);border:2px solid #f5b30188;box-shadow:0 14px 40px #000a;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding-bottom:12px;overflow:hidden;position:relative}
+.sp-icon .carsvg{width:132px!important;height:auto!important}
+.sp-tag{position:absolute;top:14px;background:#f5b301;color:#1a1405;font-weight:900;font-size:13px;letter-spacing:1px;padding:3px 8px;border-radius:6px;transform:rotate(-6deg)}
+.sp-title{margin-top:16px;font-size:58px;font-weight:900;letter-spacing:2px;color:#ffd27a;line-height:1;text-shadow:0 4px 18px #000c}.sp-title span{color:#f5b301}
+.sp-sub{margin-top:8px;font-size:16px;letter-spacing:9px;color:#b9c3cf;font-weight:700}
+.sp-bar{margin-top:30px;width:100%;height:13px;border-radius:8px;background:#ffffff14;overflow:hidden}.sp-bar u{display:block;height:100%;width:0;border-radius:8px;background:linear-gradient(90deg,#f0c060,#ffd98a);box-shadow:0 0 18px #ffd98a88}
+.sp-row{width:100%;display:flex;justify-content:space-between;margin-top:8px;font-size:14px;color:#d7dde6}.sp-pct{color:#ffd27a}
+.sp-tip{margin-top:18px;padding:9px 16px;border-radius:24px;background:#0f1a24dd;border:1px solid #2f8f6a88;font-size:13.5px;color:#e6ebf1}.sp-tip b{color:#3ccf7a;letter-spacing:1px}
+.sp-ver{position:absolute;right:14px;bottom:10px;color:#ffffff55;font-size:12px}
+@media (max-height:420px){.sp-icon{width:86px;height:86px;border-radius:20px}.sp-icon .carsvg{width:100px!important}.sp-tag{font-size:10px;top:10px}.sp-title{font-size:44px;margin-top:10px}.sp-bar{margin-top:18px}.sp-tip{margin-top:10px}}
+.sp-dim{background:linear-gradient(180deg,#0b111a66 0,#0b111acc 40%,#0b111ad9 62%,#0b111a55 85%,#0b111a33 100%)}
+.sp-mid{top:46%}
 </style></head>
 <body><div id="app"></div>
 <script>// Türkiye'nin 81 ili ve 973 ilçesi (2013 sonrası idari yapı)
@@ -2791,6 +2809,82 @@ const P6 = (() => {
 if (typeof module !== 'undefined') module.exports = P6;
 
 window.P6 = P6;</script>
+<script>// Son Fiyat? – açılış ekranı: gece galeri sokağı, logo, yükleme çubuğu ve ipucu
+const Splash = (() => {
+  let seed = 7; const r = () => (seed = (seed * 9301 + 49297) % 233280) / 233280;
+  const W = 1600, H = 700, ROAD = 600;
+  function building(x, w, h, base, color, lit) {
+    let s = `<rect x="${x}" y="${base - h}" width="${w}" height="${h}" fill="${color}"/>`;
+    const cols = Math.floor((w - 16) / 26), rows = Math.floor((h - 30) / 34);
+    for (let i = 0; i < cols; i++) for (let j = 0; j < rows; j++) {
+      const on = r() < lit, c = on ? (r() < .7 ? '#f6c768' : '#ffe9a8') : '#1a2535';
+      s += `<rect x="${x + 12 + i * 26}" y="${base - h + 18 + j * 34}" width="16" height="20" fill="${c}" opacity="${on ? .85 : .9}"/>`;
+    }
+    return s;
+  }
+  function lamp(x) {
+    return `<rect x="${x}" y="${ROAD - 170}" width="6" height="170" fill="#2b3442"/><path d="M${x + 3} ${ROAD - 170} q 0 -14 26 -14" stroke="#2b3442" stroke-width="6" fill="none"/>
+      <rect x="${x + 20}" y="${ROAD - 188}" width="24" height="9" rx="3" fill="#ffe9a8"/>
+      <path d="M${x + 6} ${ROAD - 178} L${x + 58} ${ROAD - 178} L${x + 110} ${ROAD} L${x - 46} ${ROAD} Z" fill="url(#beam)"/>`;
+  }
+  function tree(x) { return `<rect x="${x - 4}" y="${ROAD - 70}" width="8" height="70" fill="#3b2a1f"/><circle cx="${x}" cy="${ROAD - 95}" r="38" fill="#1f4a35"/><circle cx="${x - 26}" cy="${ROAD - 78}" r="26" fill="#245a40"/><circle cx="${x + 26}" cy="${ROAD - 80}" r="28" fill="#1b4430"/>`; }
+  function person(x, c) { return `<g transform="translate(${x} ${ROAD - 62})"><circle cx="8" cy="8" r="7" fill="#e0b48a"/><rect x="1" y="16" width="14" height="28" rx="5" fill="${c}"/><rect x="3" y="42" width="4" height="20" fill="#1c2431"/><rect x="9" y="42" width="4" height="20" fill="#1c2431"/></g>`; }
+  function shop(x, w, sign, A, cars) {
+    const h = 150, y = ROAD - h;
+    let s = `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#2a3444"/>
+      <rect x="${x + 10}" y="${y + 46}" width="${w - 20}" height="${h - 46}" fill="url(#glass)"/>
+      <rect x="${x - 6}" y="${y - 4}" width="${w + 12}" height="42" rx="6" fill="#121a26" stroke="#f5b301" stroke-width="2"/>
+      <text x="${x + w / 2}" y="${y + 25}" text-anchor="middle" font-size="22" font-weight="800" fill="#f5b301" letter-spacing="3" font-family="system-ui,Arial">${sign}</text>`;
+    for (let i = 0; i < 7; i++) s += `<path d="M${x + i * w / 7} ${y + 38} l${w / 14} 10 l${w / 14} -10" fill="${i % 2 ? '#f5b301' : '#e8e8e8'}"/>`;
+    cars.forEach(([cls, col], i) => { s += `<g transform="translate(${x + 14 + i * (w - 28) / cars.length} ${ROAD - 64})">${A.car(cls, col, { w: (w - 40) / cars.length })}</g>`; });
+    return s;
+  }
+  function scene(A) {
+    seed = 7;
+    let stars = ''; for (let i = 0; i < 70; i++) stars += `<circle cx="${r() * W}" cy="${r() * 260}" r="${r() * 1.6 + .4}" fill="#fff" opacity="${r() * .6 + .2}"/>`;
+    let far = '', x = -20; while (x < W) { const w = 70 + r() * 90; far += building(x, w, 180 + r() * 220, ROAD - 120, '#141d2b', .18); x += w + 6; }
+    let mid = ''; x = -40; while (x < W) { const w = 120 + r() * 120; mid += building(x, w, 150 + r() * 160, ROAD - 140, '#1c2738', .32); x += w + 30 + r() * 60; }
+    const shops = shop(80, 360, 'OTO GALERİ', A, [['SUV', '#b3262e'], ['Aile', '#e8e8e8']]) + shop(560, 480, 'SON FİYAT?', A, [['Spor', '#c9a227'], ['Lüks', '#1d2b44'], ['Aile', '#3d7bd9']]) + shop(1160, 360, 'SATILIK', A, [['Ticari', '#e8e8e8'], ['Ekonomi', '#2f8f6a']]);
+    return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMax slice" class="sp-scene" aria-hidden="true">
+      <defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0a1020"/><stop offset=".6" stop-color="#1c2547"/><stop offset="1" stop-color="#5a3c55"/></linearGradient>
+        <linearGradient id="glass" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffd98a" stop-opacity=".55"/><stop offset="1" stop-color="#f5a623" stop-opacity=".2"/></linearGradient>
+        <linearGradient id="beam" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe9a8" stop-opacity=".28"/><stop offset="1" stop-color="#ffe9a8" stop-opacity="0"/></linearGradient></defs>
+      <rect width="${W}" height="${H}" fill="url(#sky)"/>${stars}<circle cx="1360" cy="110" r="90" fill="#f4e8c8" opacity=".08"/><circle cx="1360" cy="110" r="44" fill="#f4e8c8"/><circle cx="1346" cy="100" r="7" fill="#e2d4b0"/><circle cx="1372" cy="124" r="5" fill="#e2d4b0"/>
+      ${far}${mid}<rect y="${ROAD - 10}" width="${W}" height="20" fill="#3a4352"/>${shops}
+      ${[40, 500, 1100, 1560].map(lamp).join('')}${[470, 1080, 1540].map(tree).join('')}
+      ${person(300, '#b3474f')}${person(330, '#3d6ea8')}${person(900, '#d9a441')}${person(1450, '#4a8f6a')}
+      <rect y="${ROAD + 10}" width="${W}" height="${H - ROAD}" fill="#20262f"/>
+      ${Array.from({ length: 16 }, (_, i) => `<rect x="${i * 110 + 20}" y="${ROAD + 42}" width="60" height="6" fill="#c9ced6" opacity=".6"/>`).join('')}
+      <g class="sp-drive">${A.car('Aile', '#d9d9d9', { w: 210 })}</g></svg>`;
+  }
+  const TIPS = ['İlan fiyatı genelde değerin üstündedir; pazarlıkta ilk fiyatı kabul etme.', 'Ekspertiz yaptırmadan araç alırsan gizli kusurlar sürpriz olabilir.',
+    'Mega ihaleler 12 günde bir gelir ve en kârlı fırsatlardır.', 'Tavan teklif ihaleyi garantiler ama kârın azalır.', 'Kredi puanın yüksekse banka faizi düşer.',
+    'Yönetici aldığın galeriler sen yokken de alıp satar.', 'Zengin ilçelerde lüks ve spor araçlar daha çok satar.', 'Ucuz aldığın aracı başka ülkeye gönderip kârla satabilirsin.',
+    'Tedarik fabrikaları tamir masrafını kalıcı olarak düşürür.', 'Kusuru saklarsan bilgili müşteri şikâyet edebilir.'];
+  const STEPS = ['Galeriler hazırlanıyor…', 'Araçlar yıkanıyor…', 'Ekspertiz raporları yazılıyor…', 'Pazar ilanları toplanıyor…', 'Fiyatlar pazarlığa açılıyor…'];
+  function show(A, version, ms = 2600) {
+    const el = document.createElement('div'); el.className = 'splash';
+    const tip = TIPS[Math.floor(Math.random() * TIPS.length)];
+    el.innerHTML = `${scene(A)}<div class="sp-dim"></div>
+      <div class="sp-mid"><div class="sp-icon"><div class="sp-tag">SON FİYAT?</div>${A.car('SUV', '#b3262e', { w: 150 })}</div>
+        <div class="sp-title">SON FİYAT<span>?</span></div><div class="sp-sub">GALERİCİ SİMÜLASYONU</div>
+        <div class="sp-bar"><u></u></div><div class="sp-row"><span class="sp-step">${STEPS[0]}</span><b class="sp-pct">%0</b></div>
+        <div class="sp-tip"><b>İPUCU</b> · ${tip}</div></div><div class="sp-ver">v${version}</div>`;
+    document.body.appendChild(el);
+    const bar = el.querySelector('.sp-bar u'), pct = el.querySelector('.sp-pct'), step = el.querySelector('.sp-step'), t0 = Date.now();
+    let done = false;
+    const end = () => { if (done) return; done = true; el.classList.add('out'); setTimeout(() => el.remove(), 450); };
+    const iv = setInterval(() => {
+      const p = Math.min(1, (Date.now() - t0) / ms), e = 1 - Math.pow(1 - p, 2.2);
+      bar.style.width = (e * 100) + '%'; pct.textContent = '%' + Math.round(e * 100); step.textContent = STEPS[Math.min(STEPS.length - 1, Math.floor(e * STEPS.length))];
+      if (p >= 1) { clearInterval(iv); setTimeout(end, 250); }
+    }, 50);
+    el.addEventListener('click', () => { if (Date.now() - t0 > 600) { clearInterval(iv); end(); } });
+  }
+  return { show };
+})();
+
+window.Splash = Splash;</script>
 <script>// Son Fiyat? – çizimler (araçlar, galeri sahnesi, müşteri yüzleri)
 (() => {
   let gid = 0;
@@ -4165,6 +4259,7 @@ window.P6 = P6;</script>
     setInterval(tick, 250);
     document.addEventListener('visibilitychange', () => { if (document.hidden) save(); });
   }
+  if (window.Splash) Splash.show(A, '0.9.1');
   boot();
 })();
 </script>
