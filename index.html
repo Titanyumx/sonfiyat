@@ -562,6 +562,7 @@ button.gcard.newg{cursor:pointer;color:inherit;text-align:left}
 @keyframes coin{0%{transform:rotate(var(--a)) translateY(0) scale(.4);opacity:0}15%{opacity:1}100%{transform:rotate(var(--a)) translateY(calc(-1 * var(--d))) scale(1);opacity:0}}
 
 .fcard .fic svg{width:52px;height:46px;display:block}.fart.off,.chart2.off{filter:grayscale(.55) brightness(.85)}.chcard .chic svg{width:100%;height:100%;display:block;border-radius:8px}.chcard .chic{padding:0;overflow:hidden}
+.brbulk{display:flex;gap:6px;flex-wrap:wrap;align-items:center}.brbulk select{flex:1 1 180px;min-width:0;background:var(--card2);color:var(--txt);border:1px solid var(--line);border-radius:10px;padding:8px}.brbulk .btn{flex:1 1 auto}
 </style></head>
 <body><div id="app"></div>
 <script>// Türkiye'nin 81 ili ve 973 ilçesi (2013 sonrası idari yapı)
@@ -2644,7 +2645,28 @@ const P5 = (() => {
     addLog(s, `${c.short}: ${E.CITIES.TR[p].name} şubesi ${lv ? `seviye ${lv + 1} oldu` : 'açıldı'}.`, 'good');
     return { ok: true, lv: lv + 1 };
   }
-  const chainDaily = (s, id) => rz(Object.entries(ch(s, id).br).reduce((a, [p, lv]) => a + branchDaily(s, id, p, lv), 0) * E.BONUS.income(s, 'chain'));
+  // ---- zincir geliştirmeleri: her biri 3 seviye, tüm şubelerin gelirini artırır ----
+  const CH_UPS = {
+    otopark: [['plaka', 'Plaka tanıma & otomatik bariyer', 'Gişe kuyruğu biter, daha çok araç girer.'], ['vale', 'Vale hizmeti', 'Zengin müşteri daha çok öder.'], ['sarj', 'Elektrikli araç şarjı', 'Şarj ücreti ek gelir getirir.'], ['abone', 'Aylık abonelik sistemi', 'Düzenli müşteri, boş kalmayan katlar.']],
+    yikama: [['tunel', 'Fırçasız tünel yıkama', 'Saatte iki kat araç yıkanır.'], ['seramik', 'Seramik kaplama', 'Yüksek fiyatlı premium hizmet.'], ['randevu', 'Mobil randevu uygulaması', 'Boş saatler doluyor.'], ['su', 'Su geri dönüşüm sistemi', 'Su ve kimyasal masrafı düşer.']],
+    servis: [['tespit', 'Arıza tespit cihazı', 'Teşhis hızlanır, iş sayısı artar.'], ['parca', 'Orijinal parça anlaşması', 'Parçada kâr marjı yükselir.'], ['hizli', 'Hızlı servis hattı', 'Yağ ve filtre bakımı 30 dakikada.'], ['filo', 'Filo bakım sözleşmeleri', 'Şirket araçları düzenli gelir.']],
+    kiralama: [['online', 'Online rezervasyon', 'Araçlar daha az boş bekler.'], ['havalimani', 'Havalimanı teslim noktası', 'Turist ve iş seyahati müşterisi.'], ['kurumsal', 'Kurumsal filo kiralama', 'Uzun sözleşme, garanti gelir.'], ['sigorta', 'Ek sigorta paketleri', 'Her kiralamada ek satış.']],
+    akaryakit: [['market', 'Market ve kafe', 'Yakıt alan müşteri alışveriş de yapar.'], ['yikama', 'Otomatik yıkama ünitesi', 'İstasyonda ikinci gelir kalemi.'], ['kart', 'Sadakat kartı', 'Müşteri hep senin istasyonuna gelir.'], ['ev', 'EV hızlı şarj', 'Elektrikli araç sahipleri de gelir.']],
+  };
+  const UP_B = [0.08, 0.10, 0.12, 0.15], UP_MAX = 3;
+  const chUps = (s, id) => { const x = ch(s, id); return (x.up = x.up || {}); };
+  const upMul = (s, id) => 1 + CH_UPS[id].reduce((a, [k], i) => a + (chUps(s, id)[k] || 0) * UP_B[i], 0);
+  const chainBase = (s, id) => Object.entries(ch(s, id).br).reduce((a, [p, lv]) => a + branchDaily(s, id, p, lv), 0);
+  const upCost = (s, id, i, lv) => roundP(Math.max(CHAINS[id].branch * 3 * (i + 1), chainBase(s, id) * UP_B[i] * 60) * Math.pow(1.6, lv));
+  function chainUp(s, id, k) {
+    const i = CH_UPS[id].findIndex(u => u[0] === k), x = ch(s, id), u = chUps(s, id); if (i < 0) return { ok: false };
+    if (!Object.keys(x.br).length) return { ok: false, msg: 'Önce en az bir şube aç.' };
+    const lv = u[k] || 0; if (lv >= UP_MAX) return { ok: false, msg: 'Bu geliştirme en üst seviyede.' };
+    const cost = upCost(s, id, i, lv), tr = W(s, 'TR'); if (tr.cash < cost) return { ok: false, msg: `Türkiye kasasında ${fmt(cost, 'TR')} olmalı.` };
+    tr.cash -= cost; u[k] = lv + 1; x.upSpent = (x.upSpent || 0) + cost;
+    addLog(s, `${CHAINS[id].short}: ${CH_UPS[id][i][1]} seviye ${lv + 1}.`, 'good'); return { ok: true, lv: lv + 1 };
+  }
+  const chainDaily = (s, id) => rz(chainBase(s, id) * upMul(s, id) * E.BONUS.income(s, 'chain'));
   const chainsDaily = s => Object.keys(CHAINS).reduce((a, id) => a + chainDaily(s, id), 0);
   // sinerji: şubesi olan ildeki galerilerde indirim (UI ve motor için)
   const ilOfPlace = p => (E.CITIES.TR[p] || {}).il;
@@ -2688,7 +2710,7 @@ const P5 = (() => {
   // net değere katılan yatırımlar (satılınca dönecek değere yakın)
   E.NW_HOOKS.push(s => {
     let v = Object.keys(FACTORIES).reduce((a, id) => a + fInvested(s, id), 0) * 0.7;
-    for (const id of Object.keys(CHAINS)) { const x = (s.chains || {})[id]; if (!x) continue; for (const [p, lv] of Object.entries(x.br)) for (let i = 0; i < lv; i++) v += branchCost(id, p, i) * 0.7; }
+    for (const id of Object.keys(CHAINS)) { const x = (s.chains || {})[id]; if (!x) continue; for (const [p, lv] of Object.entries(x.br)) for (let i = 0; i < lv; i++) v += branchCost(id, p, i) * 0.7; v += (x.upSpent || 0) * 0.5; }
     if (s.club) v += clubPrice(s.club.id) * (0.8 + 0.1 * s.club.squad);
     for (const x of Object.values(s.lux || {})) v += x.val * 0.95;
     for (const id of Object.keys(s.equip || {})) v += EQUIP[id].cost * 0.5;
@@ -2704,7 +2726,7 @@ const P5 = (() => {
   E.onDaily(s => { stepMgrs(s); stepFactories(s); stepChains(s); stepBrand(s); stepClub(s); stepLux(s); if (s.day % 7 === 0) backup(s, E.SAVE_KEY); });
 
   return { GUIDE, guide, STYLES, maxMgrs, mgrSalary, newMgrCands, init, hireMgr, fireMgr, assign, autoAssign, allGalleries, managed,
-    CLUBS, spCost, spBonus, SP_DAYS, SP_MAX, spActive, sponsor, clubPrice, squadCost, buyClub, upSquad, sellClub, clubWeekly, ownClubBonus, LUX, luxVal, buyLux, sellLux, luxCount, prestigeBonus, BRAND_COST, BRAND_OFFICE, SEGS, FAC, brandOf, foundBrand, devCost, devModel, upFactory, dealerCost, upDealer, demandAt, brandDay, EQUIP, hasEq, buyEquip, nEquip, CHAINS, CH_MAX, ch, branchCost, branchDaily, chainOpen, branchUp, chainDaily, chainsDaily, openPlaces, hasChainInIl, FACTORIES, F_MAX, F_STEP, fLevel, fCost, fWeekly, factoryDisc, buildFactory, sellFactories, weeklyFactory, backup, backups };
+    CLUBS, spCost, spBonus, SP_DAYS, SP_MAX, spActive, sponsor, clubPrice, squadCost, buyClub, upSquad, sellClub, clubWeekly, ownClubBonus, LUX, luxVal, buyLux, sellLux, luxCount, prestigeBonus, BRAND_COST, BRAND_OFFICE, SEGS, FAC, brandOf, foundBrand, devCost, devModel, upFactory, dealerCost, CH_UPS, UP_B, UP_MAX, chUps, upMul, upCost, chainUp, upDealer, demandAt, brandDay, EQUIP, hasEq, buyEquip, nEquip, CHAINS, CH_MAX, ch, branchCost, branchDaily, chainOpen, branchUp, chainDaily, chainsDaily, openPlaces, hasChainInIl, FACTORIES, F_MAX, F_STEP, fLevel, fCost, fWeekly, factoryDisc, buildFactory, sellFactories, weeklyFactory, backup, backups };
 })();
 if (typeof module !== 'undefined') module.exports = P5;
 
@@ -3475,7 +3497,7 @@ window.Splash = Splash;</script>
       <button class="gcard newg" data-tab="iller"><div class="gbody"><b>+ Yeni galeri aç</b>
         <span class="muted small">${cc() === 'TR' ? 'İl ve ilçe aç, açtığın ilçede galeri kur. Her ilçenin müşterisi ve kirası farklı.' : 'Şehir aç, orada galeri kur.'}</span></div></button></div>`;
   }
-  let citySel = null, cityQ = '';
+  let citySel = null, cityQ = '', brIl = '', ret = null;
   function citiesSub() {
     E.ensureUnlock(S);
     const c = cc(), CL = E.CITYLIST[c], W0 = w();
@@ -3489,7 +3511,7 @@ window.Splash = Splash;</script>
     const right = !open ? `<div class="clock2"><span>🔒</span><b>${esc(sel.name)} kilitli</b><small class="muted">${c === 'TR' ? `${sel.places.length} ilçe · ` : ''}${sel.tier === 1 ? 'büyükşehir' : sel.tier === 2 ? 'büyük il' : 'il'}</small>
         <div class="row2"><button class="btn pri" data-ucity="${citySel}">Aç · ${MS(E.cityUnlockCash(S, c, citySel))}</button><button class="btn real" data-ucityr="${citySel}">${E.REAL_PRICE.city}</button></div>
         <small class="muted">${c === 'TR' ? 'Şehri açınca ilçelerini tek tek açabilirsin.' : 'Şehri açınca orada galeri kurabilirsin.'}</small></div>`
-      : `<div class="places">${places.map(({ p, x }) => {
+      : `${c === 'TR' && sel.places.some(p => !E.placeOpen(S, c, p)) ? (() => { const lk = sel.places.filter(p => !E.placeOpen(S, c, p)), tot = lk.reduce((a, p) => a + E.placeUnlockCash(S, c, p), 0); return `<button class="btn ${W0.cash >= Math.min(...lk.map(p => E.placeUnlockCash(S, c, p))) ? 'pri' : ''} wide" data-uall="${citySel}">Kalan ${lk.length} ilçeyi aç · ${MS(tot)}</button>`; })() : ''}<div class="places">${places.map(({ p, x }) => {
         const po = E.placeOpen(S, c, p), has = W0.galleries.some(g => g.city === p);
         const btn = has ? '<span class="st-b here">GALERİN VAR</span>' : po ? `<button class="btn pri sm2" data-newgal="${p}">Galeri aç · ${MS(E.newGalleryCost(S, c, p))}</button>` : `<button class="btn sm2" data-uplace="${p}">🔒 Aç · ${MS(E.placeUnlockCash(S, c, p))}</button>`;
         return `<div class="place ${po ? 'open' : ''} ${p === distSel ? 'hl' : ''}" data-dsel="${p}"><div><b>${esc(x.name)}</b><small>${esc(x.desc)} · kira ${MS(x.rent)}/hafta</small></div>${btn}</div>`;
@@ -3608,7 +3630,7 @@ window.Splash = Splash;</script>
     return `<div class="vh"><h1>Borsa</h1><div class="subtabs">${tabs.map(([id, l]) => `<button class="${isub === id ? 'on' : ''}" data-isub="${id}">${l}</button>`).join('')}</div></div>${investSub()}`;
   }
   function bankaView() { return `<div class="vh"><h1>Banka</h1><span class="muted">Krediler Türkiye kasasına yatar, taksitler oradan çekilir</span></div><section class="panel bank wideb">${bankHtml()}</section>`; }
-  function illerView() { return `<div class="vh"><h1>${cc() === 'TR' ? 'Türkiye haritası' : 'Şehirler · ' + COUNTRIES[cc()].name}</h1>${cc() === 'TR' ? `<div class="subtabs"><button class="${cityMode === 'harita' ? 'on' : ''}" data-cmode="harita">Harita</button><button class="${cityMode === 'liste' ? 'on' : ''}" data-cmode="liste">Liste</button></div>` : '<span class="muted">Şehir aç, orada galeri kur</span>'}</div>${citiesSub()}`; }
+  function illerView() { return `<div class="vh">${ret ? '<button class="btn" data-ret>‹ Geri</button>' : ''}<h1>${cc() === 'TR' ? 'Türkiye haritası' : 'Şehirler · ' + COUNTRIES[cc()].name}</h1>${cc() === 'TR' ? `<div class="subtabs"><button class="${cityMode === 'harita' ? 'on' : ''}" data-cmode="harita">Harita</button><button class="${cityMode === 'liste' ? 'on' : ''}" data-cmode="liste">Liste</button></div>` : '<span class="muted">Şehir aç, orada galeri kur</span>'}</div>${citiesSub()}`; }
   const SOON = {
     online: ['Online galeri', 'Diğer oyuncuların satışa çıkardığı araçları al, kendi araçlarını onlara sat. Fiyat tavanı piyasa değerinin +%25\'i.'],
     oihale: ['Online ihale', 'Gerçek oyuncularla canlı ihale. Odalar kasa ve kredi puanı şartıyla açılır.'],
@@ -3711,7 +3733,7 @@ window.Splash = Splash;</script>
           ${nf ? `<button class="btn wide ${tr >= nf.cost ? 'pri' : ''}" data-bfac ${tr >= nf.cost ? '' : 'disabled'}>Büyüt → ${nf.cap}/gün · ${fmtS(nf.cost, 'TR')}</button>` : '<small class="pos">En büyük fabrika</small>'}</div>
         <div class="panel"><small class="cap">TOPLAM</small><b>${Math.round(b.units).toLocaleString('tr-TR')} araç</b><small class="pos">Kâr ${fmtS(b.total, 'TR')}</small></div></div>
       <small class="cap">MODELLER</small><div class="brlist">${segs}</div>
-      <small class="cap">BAYİLER · açtığın ilçeler</small>${Object.keys(b.models).length ? '' : '<small class="muted">Bayiler model olmadan satış yapamaz; önce bir model geliştir.</small>'}<div class="brlist">${deal}</div>
+      <small class="cap">BAYİLER · açtığın ilçeler</small>${Object.keys(b.models).length ? '' : '<small class="muted">Bayiler model olmadan satış yapamaz; önce bir model geliştir.</small>'}${brPicker('dealer')}<button class="btn wide" data-gomap="brand">Türkiye haritasında il / ilçe aç →</button>
       <button class="btn wide" data-tab="iller">Daha çok ilçe aç (Türkiye haritası) →</button></div>`;
   }
   function econModal() {
@@ -3745,15 +3767,60 @@ window.Splash = Splash;</script>
     if (esub === 'muzayede') body = `<p class="muted">Klasik ve sınırlı seri araçların satıldığı haftalık mezat İhale bölümünde.</p><button class="btn pri" data-mezat>Mezata git ›</button>`;
     return `${xBtn}<div class="mcol econ-m"><div class="row"><div><small class="cap pos">HOLDİNG · EKONOMİ</small><h2>Ekonomi Merkezi</h2></div><div class="subtabs">${tabs.map(([id, l]) => `<button class="${esub === id ? 'on' : ''}" data-esub="${id}">${l}</button>`).join('')}</div></div>${body}</div>`;
   }
+
+  // ---------- toplu şube/bayi seçici (zincirler + marka bayileri) ----------
+  function brKind(kind) {
+    if (kind === 'dealer') { const b = R.brandOf(S); return { max: 3, lv: p => (b.dealers[p] || 0), cost: (p, lv) => R.dealerCost(p, lv), up: p => R.upDealer(S, p), info: (p, lv) => lv ? `Bayi seviye ${lv}` : 'Bayi yok', word: 'bayi' }; }
+    const id = kind.slice(3), x = R.ch(S, id), m = R.upMul(S, id);
+    return { max: R.CH_MAX, lv: p => (x.br[p] || 0), cost: (p, lv) => R.branchCost(id, p, lv), up: p => R.branchUp(S, id, p), info: (p, lv) => lv ? `Seviye ${lv} · günlük +${fmtS(R.branchDaily(S, id, p, lv) * m, 'TR')}` : `Şube açılırsa günlük +${fmtS(R.branchDaily(S, id, p, 1) * m, 'TR')}`, word: 'şube' };
+  }
+  function brScope() {
+    const CL = E.CITYLIST.TR;
+    if (brIl && CL[brIl] && E.cityOpen(S, 'TR', brIl)) return CL[brIl].places.slice();
+    brIl = brIl && CL[brIl] ? brIl : ''; return brIl ? [] : R.openPlaces(S);
+  }
+  function brPlan(kind, mode) {
+    const K = brKind(kind), sc = brScope(), out = [];
+    for (const p of sc) { const lv = K.lv(p); if (mode === 'open' ? lv : !lv || lv >= K.max) continue;
+      out.push({ p, cost: K.cost(p, lv) + (E.placeOpen(S, 'TR', p) ? 0 : E.placeUnlockCash(S, 'TR', p)) }); }
+    out.sort((a, b) => a.cost - b.cost);
+    let cash = E.W(S, 'TR').cash, n = 0, tot = 0, all = 0; for (const o of out) { all += o.cost; if (cash >= o.cost) { cash -= o.cost; n++; tot += o.cost; } }
+    return { list: out, n, tot, all };
+  }
+  function brRun(kind, mode) {
+    const K = brKind(kind), pl = brPlan(kind, mode); let n = 0, tot = 0; const c0 = E.W(S, 'TR').cash;
+    for (const { p } of pl.list) { if (!E.placeOpen(S, 'TR', p)) { const u = E.unlockPlace(S, 'TR', p); if (!u.ok) continue; }
+      const r = K.up(p); if (r.ok) n++; }
+    tot = c0 - E.W(S, 'TR').cash;
+    return n ? { ok: true, n, tot } : { ok: false, msg: 'Kasada yeterli para yok.' };
+  }
+  function brPicker(kind) {
+    const K = brKind(kind), CL = E.CITYLIST.TR, tr = E.W(S, 'TR').cash, sc = brScope();
+    const ils = Object.keys(CL).sort((a, b) => (E.cityOpen(S, 'TR', b) - E.cityOpen(S, 'TR', a)) || CL[a].name.localeCompare(CL[b].name, 'tr'));
+    const cnt = k => CL[k].places.filter(p => K.lv(p)).length;
+    const sel = `<select data-bril>${`<option value="">Açık tüm ilçeler (${R.openPlaces(S).length})</option>`}${ils.map(k => `<option value="${k}" ${k === brIl ? 'selected' : ''} ${E.cityOpen(S, 'TR', k) ? '' : 'disabled'}>${E.cityOpen(S, 'TR', k) ? '' : '🔒 '}${esc(CL[k].name)}${E.cityOpen(S, 'TR', k) ? ` · ${cnt(k)}/${CL[k].places.length}` : ''}</option>`).join('')}</select>`;
+    const po = brPlan(kind, 'open'), pu = brPlan(kind, 'up');
+    const bulk = `<div class="brbulk">${sel}
+      <button class="btn ${po.n ? 'pri' : ''}" data-brall="${kind}|open" ${po.n ? '' : 'disabled'}>${po.list.length ? `Hepsine ${K.word} aç · ${po.n}/${po.list.length} · ${MS(po.tot)}` : `Boş ilçe yok`}</button>
+      <button class="btn ${pu.n ? 'pri' : ''}" data-brall="${kind}|up" ${pu.n ? '' : 'disabled'}>${pu.list.length ? `Hepsini büyüt · ${pu.n}/${pu.list.length} · ${MS(pu.tot)}` : 'Büyütülecek yok'}</button></div>
+      <small class="muted">Toplu işlem en ucuzdan başlar, kasan yettiği kadarını yapar.${brIl ? ' Kilitli ilçeler otomatik açılır (ilçe bedeli dahil).' : ' Kilitli ilçeler için listeden bir il seç.'}</small>`;
+    const ps = sc.sort((a, b) => (K.lv(b) - K.lv(a)) || (E.placeOpen(S, 'TR', b) - E.placeOpen(S, 'TR', a)) || CITIES.TR[b].w - CITIES.TR[a].w);
+    const rows = ps.map(p => { const lv = K.lv(p), op = E.placeOpen(S, 'TR', p), cost = lv < K.max ? K.cost(p, lv) + (op ? 0 : E.placeUnlockCash(S, 'TR', p)) : 0, x = CITIES.TR[p];
+      return `<div class="place ${lv ? 'open' : ''}"><div><b>${brIl ? '' : esc(x.il) + ' · '}${esc(x.name)}${op ? '' : ' <span class="muted">🔒</span>'}</b><small>${K.info(p, lv)}</small></div>
+        ${lv >= K.max ? '<span class="st-b here">EN ÜST</span>' : `<button class="btn sm2 ${tr >= cost ? 'pri' : ''}" data-br1="${kind}|${p}" ${tr >= cost ? '' : 'disabled'}>${lv ? 'Büyüt' : op ? `${K.word === 'bayi' ? 'Bayi' : 'Şube'} aç` : 'İlçe + ' + K.word} · ${MS(cost)}</button>`}</div>`; }).join('');
+    return `${bulk}<div class="brlist">${rows || '<p class="muted">Bu kapsamda ilçe yok.</p>'}</div>`;
+  }
   function chainModal() {
-    const id = modal.id, c = R.CHAINS[id], x = R.ch(S, id), tr = E.W(S, 'TR').cash;
-    const ps = R.openPlaces(S).sort((a, b) => ((x.br[b] || 0) - (x.br[a] || 0)) || CITIES.TR[b].w - CITIES.TR[a].w);
-    return `${xBtn}<div class="mcol mgrs-m"><div class="row"><h2>${c.icon} ${c.name}</h2><small class="pos">Günlük +${fmtS(R.chainDaily(S, id), 'TR')}</small></div>
-      <small class="muted">Açtığın ilçelere şube kurabilirsin; ilçe başına bir şube, 3 seviyeye kadar büyür. Zengin ilçede şube pahalı ama daha çok kazandırır; her şube kendini yaklaşık 90 günde öder.</small>
-      <div class="brlist">${ps.map(p => { const lv = x.br[p] || 0, cost = lv < R.CH_MAX ? R.branchCost(id, p, lv) : 0, x2 = CITIES.TR[p];
-        return `<div class="place ${lv ? 'open' : ''}"><div><b>${esc(x2.il)} · ${esc(x2.name)}</b><small>${lv ? `Seviye ${lv} · günlük +${fmtS(R.branchDaily(S, id, p, lv), 'TR')}` : `Şube açılırsa günlük +${fmtS(R.branchDaily(S, id, p, 1), 'TR')}`}</small></div>
-          ${lv >= R.CH_MAX ? '<span class="st-b here">EN ÜST</span>' : `<button class="btn sm2 ${tr >= cost ? 'pri' : ''}" data-branch="${id}|${p}" ${tr >= cost ? '' : 'disabled'}>${lv ? 'Büyüt' : 'Şube aç'} · ${MS(cost)}</button>`}</div>`; }).join('')}</div>
-      <button class="btn wide" data-tab="iller">Daha çok ilçe aç (Türkiye haritası) →</button></div>`;
+    const id = modal.id, c = R.CHAINS[id], x = R.ch(S, id), tr = E.W(S, 'TR').cash, ct = modal.ct || 'sube', nb = Object.keys(x.br).length;
+    const tabs = `<div class="subtabs"><button class="${ct === 'sube' ? 'on' : ''}" data-chtab="sube">Şubeler · ${nb}</button><button class="${ct === 'gel' ? 'on' : ''}" data-chtab="gel">Geliştirmeler · +%${Math.round((R.upMul(S, id) - 1) * 100)}</button></div>`;
+    let body;
+    if (ct === 'gel') body = `<small class="muted">Geliştirmeler tüm şubelerinin gelirini artırır. Fiyatı zincirin büyüklüğüne göre değişir; her seviye yaklaşık 2–5 ayda kendini öder.</small>
+      <div class="fgrid">${R.CH_UPS[id].map(([k, n, d], i) => { const lv = R.chUps(S, id)[k] || 0, cost = lv < R.UP_MAX ? R.upCost(S, id, i, lv) : 0;
+        return `<article class="fcard ${lv ? 'on' : ''}"><div><b>${n}</b><span class="pips">${Array.from({ length: R.UP_MAX }, (_, q) => `<i class="${q < lv ? 'on' : ''}"></i>`).join('')}</span><small class="muted">${d}</small><small class="pos">Seviye başı gelir +%${Math.round(R.UP_B[i] * 100)}${lv ? ` · şu an +%${Math.round(lv * R.UP_B[i] * 100)}` : ''}</small></div>
+          ${lv >= R.UP_MAX ? '<button class="btn wide" disabled>MAKSİMUM SEVİYE</button>' : `<button class="btn wide ${tr >= cost && nb ? 'pri' : ''}" data-chup="${id}|${k}" ${tr >= cost && nb ? '' : 'disabled'}>${nb ? `${lv ? 'Geliştir' : 'Kur'} · ${MS(cost)}` : 'Önce şube aç'}</button>`}</article>`; }).join('')}</div>`;
+    else body = `<small class="muted">İlçe başına bir şube, ${R.CH_MAX} seviyeye kadar büyür. Zengin ilçede şube pahalı ama daha çok kazandırır.</small>${brPicker('ch:' + id)}
+      <button class="btn wide" data-gomap="chain|${id}">Türkiye haritasında il / ilçe aç →</button>`;
+    return `${xBtn}<div class="mcol mgrs-m"><div class="row"><h2>${c.icon} ${c.name}</h2>${tabs}<small class="pos">Günlük +${fmtS(R.chainDaily(S, id), 'TR')}</small></div>${body}</div>`;
   }
   function mgrsModal() {
     const G = R.allGalleries(S), stars = n => '★'.repeat(n) + '<i>' + '★'.repeat(5 - n) + '</i>';
@@ -4155,7 +4222,7 @@ window.Splash = Splash;</script>
   const on = (sel, fn) => $$(sel).forEach(b => { b.onclick = e => fn(b, e); });
 
   function bind() {
-    on('[data-tab]', b => { tab = b.dataset.tab; if (tab === 'magaza') shopTab = 'paket'; if (tab === 'holding') hsub = 'yatirim'; modal = null; render(); });
+    on('[data-tab]', b => { tab = b.dataset.tab; ret = null; if (tab === 'magaza') shopTab = 'paket'; if (tab === 'holding') hsub = 'yatirim'; modal = null; render(); });
     on('[data-go2]', b => { const [t2, s2] = b.dataset.go2.split(':'); tab = t2; if (s2) { if (t2 === 'pazar') psub = s2; else if (t2 === 'holding') hsub = s2; else sub = s2; } modal = null; render(); });
     on('[data-hsub]', b => { hsub = b.dataset.hsub; render(); });
     on('[data-cmode]', b => { cityMode = b.dataset.cmode; render(); });
@@ -4199,6 +4266,16 @@ window.Splash = Splash;</script>
     on('[data-bdeal]', b => { const r = R.upDealer(S, b.dataset.bdeal); after(r, r.ok ? `Bayi seviye ${r.lv}!` : null); });
     on('[data-chain]', b => { modal = { type: 'chain', id: b.dataset.chain }; render(); });
     on('[data-chopen]', b => { const r = R.chainOpen(S, b.dataset.chopen); if (r.ok) modal = { type: 'chain', id: b.dataset.chopen }; after(r, r.ok ? `${R.CHAINS[b.dataset.chopen].name} kuruldu!` : null); });
+    $$('[data-bril]').forEach(b => { b.onchange = () => { brIl = b.value; render(); }; });
+    on('[data-brall]', b => { const [k, m] = b.dataset.brall.split('|'); const r = brRun(k, m); after(r, r.ok ? `${r.n} ${k === 'dealer' ? 'bayi' : 'şube'} ${m === 'open' ? 'açıldı' : 'büyütüldü'} · ${MS(r.tot)}` : null); });
+    on('[data-br1]', b => { const [k, p] = b.dataset.br1.split('|'); const K = brKind(k); if (!E.placeOpen(S, 'TR', p)) { const u = E.unlockPlace(S, 'TR', p); if (!u.ok) return after(u); } const r = K.up(p); after(r, r.ok ? `${CITIES.TR[p].name}: ${K.word} seviye ${r.lv}` : null); });
+    on('[data-chtab]', b => { modal.ct = b.dataset.chtab; render(); });
+    on('[data-chup]', b => { const [id, k] = b.dataset.chup.split('|'); const r = R.chainUp(S, id, k); after(r, r.ok ? 'Geliştirme tamam!' : null); });
+    on('[data-gomap]', b => { const [t, id] = b.dataset.gomap.split('|'); ret = { tab, hsub, modal: t === 'chain' ? { type: 'chain', id, ct: 'sube' } : { type: 'brand' } }; if (brIl) citySel = brIl; tab = 'iller'; modal = null; render(); });
+    on('[data-ret]', b => { const r = ret; ret = null; tab = r.tab; hsub = r.hsub; modal = r.modal; render(); });
+    on('[data-uall]', b => { const ck = b.dataset.uall, c = cc(); let n = 0, t = 0; const ps = E.CITYLIST[c][ck].places.filter(p => !E.placeOpen(S, c, p)).sort((a, b2) => E.placeUnlockCash(S, c, a) - E.placeUnlockCash(S, c, b2));
+      for (const p of ps) { const k = E.placeUnlockCash(S, c, p); const r = E.unlockPlace(S, c, p); if (!r.ok) break; n++; t += k; }
+      after(n ? { ok: true } : { ok: false, msg: 'Kasada yeterli para yok.' }, n ? `${n} ilçe açıldı · ${MS(t)}` : null); });
     on('[data-branch]', b => { const [id, p] = b.dataset.branch.split('|'); const r = R.branchUp(S, id, p); after(r, r.ok ? `${CITIES.TR[p].name} şubesi seviye ${r.lv}!` : null); });
     on('[data-mhire]', b => { const r = R.hireMgr(S, b.dataset.mhire); after(r, r.ok ? `${r.name} yönetim kuruluna katıldı.` : null); });
     on('[data-mfire]', b => { R.fireMgr(S, b.dataset.mfire); after({ ok: true }, 'Yönetici ayrıldı.'); });
