@@ -500,6 +500,9 @@ button.gcard.newg{cursor:pointer;color:inherit;text-align:left}
   .mapband{padding:6px 12px}.mapband b{font-size:15px}
   .keyhead{padding:8px 12px}
 }
+/* telefon köşeleri ve çentik: içerik yuvarlak köşelerin altında kalmasın */
+#app{padding:env(safe-area-inset-top) max(env(safe-area-inset-right),6px) env(safe-area-inset-bottom) max(env(safe-area-inset-left),6px);box-sizing:border-box}
+@media (max-height:520px){.start-l>p{display:none}}
 </style></head>
 <body><div id="app"></div>
 <script>// Türkiye'nin 81 ili ve 973 ilçesi (2013 sonrası idari yapı)
