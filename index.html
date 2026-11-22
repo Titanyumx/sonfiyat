@@ -12,7 +12,7 @@
 *{box-sizing:border-box;min-width:0;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font:14px/1.35 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overflow:hidden}
 button{font:inherit;color:inherit;cursor:pointer}
-#app{height:100vh;height:100dvh;display:flex}
+#app{height:var(--vh,100dvh);width:var(--vw,100vw);display:flex}
 .muted{color:var(--mut)}.small{font-size:12px}.pos{color:var(--good)}.neg{color:var(--bad)}
 /* sol menü */
 .side{flex:none;width:84px;background:#0a0f14;border-right:1px solid var(--line);display:flex;flex-direction:column;gap:2px;padding:max(8px,env(safe-area-inset-top)) 6px 8px max(6px,env(safe-area-inset-left));overflow-y:auto}
@@ -115,7 +115,7 @@ h1{font-size:20px;margin:0}h2{font-size:18px;margin:4px 0}
 .row2{display:flex;gap:8px;margin-top:8px}.row2 .btn{flex:1}
 /* pencereler */
 .dim{position:fixed;inset:0;background:#000b;z-index:10;animation:fade .18s}
-.modal{position:fixed;z-index:11;left:50%;top:50%;transform:translate(-50%,-50%);width:min(860px,calc(100vw - 24px));max-height:calc(100dvh - 20px);overflow-y:auto;background:linear-gradient(180deg,#1b2a37,#16212b);border:1.5px solid #f5b30155;border-radius:22px;padding:16px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:16px;animation:pop .2s ease-out;box-shadow:0 20px 60px #000a}
+.modal{position:fixed;z-index:11;left:50%;top:50%;transform:translate(-50%,-50%);width:min(860px,calc(var(--vw,100vw) - 24px));max-height:calc(var(--vh,100dvh) - 20px);overflow-y:auto;background:linear-gradient(180deg,#1b2a37,#16212b);border:1.5px solid #f5b30155;border-radius:22px;padding:16px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:16px;animation:pop .2s ease-out;box-shadow:0 20px 60px #000a}
 .x{position:absolute;right:10px;top:10px;background:#ffffff12;border:0;width:34px;height:34px;border-radius:50%;z-index:2}
 .mcol{display:flex;flex-direction:column;gap:6px}
 .art-col{background:#0c111766;border-radius:16px;padding:10px}
@@ -321,7 +321,7 @@ select{width:100%;background:#0a0f14;color:var(--ink);border:1px solid var(--lin
 .bolt{font-size:38px}.x2{font-size:34px;line-height:1}
 .keyhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}.keyhead>div{display:flex;flex-direction:column}
 /* olay pencereleri */
-.modal.popup,.modal.away{width:min(820px,calc(100vw - 24px))}
+.modal.popup,.modal.away{width:min(820px,calc(var(--vw,100vw) - 24px))}
 .popart{align-items:center;justify-content:center;border-radius:16px;min-height:200px;background:radial-gradient(circle,#ef5a5a33,#0c1117 70%)}
 .popart.good{background:radial-gradient(circle,#3ccf7a33,#0c1117 70%)}
 .popic{font-size:96px;filter:drop-shadow(0 6px 18px #0009)}
@@ -407,7 +407,7 @@ button.gcard.newg{cursor:pointer;color:inherit;text-align:left}
 .setrow input{background:var(--card2);color:var(--txt);border:1px solid var(--line);border-radius:8px;padding:6px 8px;width:130px}
 .seg4{display:flex;gap:8px}.seg4 button{flex:1;padding:8px;border-radius:12px;border:1px solid #2f8f6a;background:none;color:var(--txt);font-weight:600}.seg4 button.on{background:var(--acc);color:#1a1405;border-color:var(--acc)}
 .modal.mgrs,.modal.settings,.modal.rank,.modal.fx{grid-template-columns:minmax(0,1fr)}
-.modal.settings{width:min(720px,calc(100vw - 24px))}.modal.fx{width:min(480px,calc(100vw - 24px))}
+.modal.settings{width:min(720px,calc(var(--vw,100vw) - 24px))}.modal.fx{width:min(480px,calc(var(--vw,100vw) - 24px))}
 .mgrs-m .staff{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:8px}
 .modal .row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding-right:44px}
 /* Türkiye haritası */
@@ -427,7 +427,7 @@ button.gcard.newg{cursor:pointer;color:inherit;text-align:left}
 .startmap .il.gal{fill:#e0a92e}
 .start-form .dists{grid-template-columns:repeat(3,minmax(0,1fr))}
 .start-form .dist small+small{display:none}.start-form .dist{padding:6px 8px}
-.ilsvg{width:100%;height:auto;max-height:calc(100vh - 170px);display:block;background:#16202c;border-radius:10px}
+.ilsvg{width:100%;height:auto;max-height:calc(var(--vh,100vh) - 170px);display:block;background:#16202c;border-radius:10px}
 .ilsvg .il{stroke-width:1.2}.mleg .zoom{margin-left:auto;display:flex;gap:6px}.mleg .zoom .btn{min-width:34px}
 .place.hl{border-color:var(--acc);box-shadow:0 0 0 2px #f5b30155}
 .start-map .mleg{align-items:center}
@@ -447,7 +447,7 @@ button.gcard.newg{cursor:pointer;color:inherit;text-align:left}
 .clubown{display:grid;grid-template-columns:auto 1fr auto;gap:16px;align-items:center}.clubown>div{display:flex;flex-direction:column;gap:4px}.clubown b{font-size:22px}
 .clubbtn{display:flex;flex-direction:column;gap:8px}
 .vh .subtabs{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;min-width:0}.vh .subtabs::-webkit-scrollbar{display:none}.vh .subtabs button{white-space:nowrap;flex:none}.vh{min-width:0}
-.modal.econ{grid-template-columns:minmax(0,1fr);width:min(1000px,calc(100vw - 24px))}
+.modal.econ{grid-template-columns:minmax(0,1fr);width:min(1000px,calc(var(--vw,100vw) - 24px))}
 .econ-m{gap:10px}.econ-m>.row{flex-wrap:nowrap}.econ-m .subtabs{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}.econ-m .subtabs button{white-space:nowrap;flex:none}
 .econgm{display:grid;grid-template-columns:150px 1fr;gap:16px;align-items:center}.econgm>div:last-child{display:flex;flex-direction:column;gap:8px}
 .trophy{display:flex;flex-direction:column;align-items:center;font-size:70px;line-height:1}.trophy b{font-size:20px;color:var(--acc);margin-top:8px}
@@ -2937,6 +2937,15 @@ window.P6 = P6;</script>
 
   const ROT = '<div class="rotate"><svg viewBox="0 0 64 64" width="72"><rect x="20" y="8" width="24" height="44" rx="4" fill="none" stroke="#f5b301" stroke-width="3"/><path d="M50 40 A18 18 0 0 1 34 56" fill="none" stroke="#f5b301" stroke-width="3"/><path d="M30 52 L34 56 L30 60" fill="none" stroke="#f5b301" stroke-width="3"/></svg><b>Telefonu yan çevir</b><span>Son Fiyat? yatay ekranda oynanır.</span></div>';
 
+  // küçük ekranlarda arayüzü orantılı küçült: tasarım ~480px yüksekliğe göre
+  function fitScreen() {
+    const h = window.innerHeight, w = window.innerWidth;
+    const z = Math.max(0.6, Math.min(1, Math.min(h / 480, w / 900)));
+    const r = document.documentElement;
+    r.style.zoom = z;
+    r.style.setProperty('--vh', (h / z) + 'px'); r.style.setProperty('--vw', (w / z) + 'px');
+  }
+  fitScreen(); window.addEventListener('resize', fitScreen);
   function render() {
     if (!S) return renderStart();
     const views = { ana: anaView, pazar: pazarView, galeri: galeriView, ulkeler: ulkelerView, borsa: borsaView, holding: holdingView, banka: bankaView, iller: illerView, ihale: ihaleView, online: soonView, oihale: soonView, ortak: soonView, magaza: shopView };
