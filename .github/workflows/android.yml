@@ -8,10 +8,10 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with: { node-version: 20 }
-      - uses: actions/setup-java@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with: { node-version: 22 }
+      - uses: actions/setup-java@v5
         with: { distribution: temurin, java-version: 17 }
       - name: Dosyaları yerleştir
         run: |
@@ -21,16 +21,30 @@ jobs:
           cp icon.png assets/icon-foreground.png
           cp splash.png assets/splash.png
           cp splash.png assets/splash-dark.png
+          # ikonun arka plan katmanı (düz koyu renk) – Android uyarlanabilir ikon için gerekli
+          python3 -c "import zlib,struct;W=H=1024;raw=b''.join(b'\\x00'+bytes([15,19,25])*W for _ in range(H));c=lambda t,d:struct.pack('>I',len(d))+t+d+struct.pack('>I',zlib.crc32(t+d)&0xffffffff);open('assets/icon-background.png','wb').write(b'\\x89PNG\\r\\n\\x1a\\n'+c(b'IHDR',struct.pack('>IIBBBBB',W,H,8,2,0,0,0))+c(b'IDAT',zlib.compress(raw))+c(b'IEND',b''))"
       - run: npm install
       - run: npx cap add android
       - name: Yatay ekran
         run: sed -i 's/<activity /<activity android:screenOrientation="sensorLandscape" /' android/app/src/main/AndroidManifest.xml
       - name: İkon ve açılış ekranı
-        run: npx capacitor-assets generate --android --iconBackgroundColor '#0f1319' --splashBackgroundColor '#0f1319' || true
+        run: npx capacitor-assets generate --android || true
+      - name: İkon kontrolü
+        run: |
+          # arka plan katmanı yine de üretilmediyse uyarlanabilir ikonu kaldır (eski tip ikon kullanılır, derleme durmaz)
+          if grep -rq "@mipmap/ic_launcher_background" android/app/src/main/res/mipmap-anydpi-v26/ 2>/dev/null && ! ls android/app/src/main/res/mipmap-*/ic_launcher_background.* >/dev/null 2>&1; then
+            rm -f android/app/src/main/res/mipmap-anydpi-v26/ic_launcher*.xml
+          fi
       - run: npx cap sync android
       - name: APK derle
-        run: cd android && chmod +x gradlew && ./gradlew assembleDebug
+        run: cd android && chmod +x gradlew && ./gradlew assembleDebug --no-daemon --stacktrace 2>&1 | tee ../build-log.txt; exit ${PIPESTATUS[0]}
       - uses: actions/upload-artifact@v4
         with:
           name: sonfiyat-apk
           path: android/app/build/outputs/apk/debug/app-debug.apk
+      - name: Hata kaydını sakla
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hata-kaydi
+          path: build-log.txt
