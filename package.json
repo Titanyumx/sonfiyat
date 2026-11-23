@@ -1,6 +1,6 @@
 {
   "name": "sonfiyat",
-  "version": "0.9.0",
+  "version": "0.9.2",
   "private": true,
   "description": "Son Fiyat? – Galerici Simülasyonu",
   "scripts": {
@@ -10,7 +10,8 @@
     "@capacitor/android": "^6.1.2",
     "@capacitor/core": "^6.1.2",
     "@capacitor/screen-orientation": "^6.0.2",
-    "@capacitor/status-bar": "^6.0.1"
+    "@capacitor/status-bar": "^6.0.1",
+    "@capacitor/local-notifications": "^6.1.1"
   },
   "devDependencies": {
     "@capacitor/cli": "^6.1.2",
