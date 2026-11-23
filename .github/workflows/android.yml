@@ -27,8 +27,14 @@ jobs:
       - run: npx cap add android
       - name: Tam ekran
         run: cp MainActivity.java android/app/src/main/java/com/sonfiyat/galerici/MainActivity.java
-      - name: Yatay ekran
-        run: sed -i 's/<activity /<activity android:screenOrientation="sensorLandscape" /' android/app/src/main/AndroidManifest.xml
+      - name: Yatay ekran ve bildirim izni
+        run: |
+          sed -i 's/<activity /<activity android:screenOrientation="sensorLandscape" /' android/app/src/main/AndroidManifest.xml
+          grep -q POST_NOTIFICATIONS android/app/src/main/AndroidManifest.xml || sed -i 's#</manifest>#    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />\n</manifest>#' android/app/src/main/AndroidManifest.xml
+      - name: Bildirim ikonu
+        run: |
+          mkdir -p android/app/src/main/res/drawable
+          cp ic_stat_sf.png android/app/src/main/res/drawable/ic_stat_sf.png
       - name: İkon ve açılış ekranı
         run: npx capacitor-assets generate --android || true
       - name: İkon kontrolü
